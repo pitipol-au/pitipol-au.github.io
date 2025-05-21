@@ -2,30 +2,31 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>ตรวจสอบบัตรประชาชน + สร้าง QR Code</title>
+  <title>ตรวจสอบบัตรประชาชน และสร้าง QR Code</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    input, button { padding: 8px; font-size: 16px; margin: 5px 0; width: 300px; }
-    button { width: auto; margin-left: 10px; }
-    #result { margin-top: 20px; font-weight: bold; }
-    #qrcode { margin-top: 20px; }
+    input, button { padding: 8px; font-size: 16px; margin-top: 5px; }
+    input { width: 250px; }
+    button { margin-left: 5px; }
+    #result, #qr-section { margin-top: 20px; font-weight: bold; }
+    canvas { margin-top: 10px; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
-
-  <h2>ตรวจสอบเลขบัตรประชาชน 13 หลัก</h2>
+  <h1>1. ตรวจสอบเลขบัตรประชาชน 13 หลัก</h1>
   <input type="text" id="idcard" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก">
   <button onclick="checkID()">ตรวจสอบ</button>
   <div id="result"></div>
 
   <hr>
 
-  <h2>สร้าง QR Code (Mock แบบง่าย)</h2>
+  <h1>2. สร้าง QR Code จาก API</h1>
   <button onclick="generateQRCode()">สร้าง QR Code</button>
-  <div id="qrcode"></div>
-
-  <!-- QRCode.js library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <div id="qr-section">
+    <div id="qr-url"></div>
+    <canvas id="qrcode"></canvas>
+  </div>
 
   <script>
     // ตรวจสอบเลขบัตรประชาชน
@@ -47,39 +48,101 @@
       for (let i = 0; i < 12; i++) {
         sum += parseInt(id.charAt(i)) * (13 - i);
       }
-      const checkDigit = (11 - (sum % 11)) % 10;
+      const correctCheckDigit = (11 - (sum % 11)) % 10;
+      const inputCheckDigit = parseInt(id.charAt(12));
 
-      if (checkDigit === parseInt(id.charAt(12))) {
+      if (correctCheckDigit === inputCheckDigit) {
         resultDiv.innerHTML = `เลขบัตรประชาชน <strong>${id}</strong> ถูกต้อง ✔️`;
         resultDiv.style.color = "green";
       } else {
-        const correctID = id.substring(0, 12) + checkDigit;
-        resultDiv.innerHTML = `เลขบัตรไม่ถูกต้อง ❌<br>เลขที่ถูกต้องคือ: <strong>${correctID}</strong>`;
+        const correctedID = id.substring(0, 12) + correctCheckDigit;
+        resultDiv.innerHTML = `เลขบัตรไม่ถูกต้อง ❌<br>เลขที่ถูกต้องคือ: <strong>${correctedID}</strong>`;
         resultDiv.style.color = "red";
       }
     }
 
-    // สร้าง QR Code จาก mock URL หรือ API จริง (ถ้าใช้ backend)
-    function generateQRCode() {
-      const qrcodeDiv = document.getElementById('qrcode');
-      qrcodeDiv.innerHTML = ''; // Clear previous QR
+    // เรียก API เพื่อสร้างลิงก์ แล้ว generate QR Code
+    async function generateQRCode() {
+      const apiUrl = 'https://uatservice-etax.one.th/fulltax/qr-code/registerdocument';
+      const trxUUID = self.crypto.randomUUID();
 
-      // ✅ ตัวอย่าง mock URL (แทนที่ด้วยลิงก์จริงจาก backend ได้)
-      const qrLink = "https://uat-e-box.one.th/develop/?sid=dummy&id=" + crypto.randomUUID();
+      const payload = {
+        "C01-SELLER_TAX_ID": "5932328202651",
+        "C02-SELLER_BRANCH_ID": "00000",
+        "H01-DOCUMENT_TYPE_CODE": "T05",
+        "H03-DOCUMENT_ID": "ABB" + Date.now().toString().slice(0, 7),
+        "H04-DOCUMENT_ISSUE_DTM": new Date().toISOString().slice(0, 19),
+        "H21-FLEX_FIELD": trxUUID,
+        "LINE_ITEM_INFORMATION": [
+          {
+            "L01-LINE_ID": "1",
+            "L03-PRODUCT_NAME": "Product 01",
+            "L10-PRODUCT_CHARGE_AMOUNT": "1000.00",
+            "L11-PRODUCT_CHARGE_CURRENCY_CODE": "THB",
+            "L17-PRODUCT_QUANTITY": "2",
+            "L20-LINE_TAX_TYPE_CODE": "VAT",
+            "L21-LINE_TAX_CAL_RATE": "7.00",
+            "L22-LINE_BASIS_AMOUNT": "2120.00",
+            "L23-LINE_BASIS_CURRENCY_CODE": "THB",
+            "L24-LINE_TAX_CAL_AMOUNT": "140.00",
+            "L25-LINE_TAX_CAL_CURRENCY_CODE": "THB",
+            "L31-LINE_TAX_TOTAL_AMOUNT": "140.00",
+            "L32-LINE_TAX_TOTAL_CURRENCY_CODE": "THB",
+            "L33-LINE_NET_TOTAL_AMOUNT": "2130.00",
+            "L34-LINE_NET_TOTAL_CURRENCY_CODE": "THB",
+            "L35-LINE_NET_INCLUDE_TAX_TOTAL_AMOUNT": "2140.00",
+            "L36-LINE_NET_INCLUDE_TAX_TOTAL_CURRENCY_CODE": "THB",
+          }
+        ],
+        "F01-LINE_TOTAL_COUNT": "1",
+        "F03-INVOICE_CURRENCY_CODE": "THB",
+        "F04-TAX_TYPE_CODE1": "VAT",
+        "F05-TAX_CAL_RATE1": "7.00",
+        "F06-BASIS_AMOUNT1": "2120.00",
+        "F07-BASIS_CURRENCY_CODE1": "THB",
+        "F08-TAX_CAL_AMOUNT1": "140.00",
+        "F09-TAX_CAL_CURRENCY_CODE1": "THB",
+        "F29-ALLOWANCE_ACTUAL_AMOUNT": "0.00",
+        "F30-ALLOWANCE_ACTUAL_AMOUNT_CURRENCY_CODE": "THB",
+        "F38-LINE_TOTAL_AMOUNT": "2120.00",
+        "F39-LINE_TOTAL_CURRENCY_CODE": "THB",
+        "F42-ALLOWANCE_TOTAL_AMOUNT": "0.00",
+        "F43-ALLOWANCE_TOTAL_CURRENCY_CODE": "THB",
+        "F46-TAX_BASIS_TOTAL_AMOUNT": "1981.31",
+        "F47-TAX_BASIS_TOTAL_CURRENCY_CODE": "THB",
+        "F48-TAX_TOTAL_AMOUNT": "138.69",
+        "F49-TAX_TOTAL_CURRENCY_CODE": "THB",
+        "F50-GRAND_TOTAL_AMOUNT": "2120.00",
+        "F51-GRAND_TOTAL_CURRENCY_CODE": "THB",
+        "T01-TOTAL_DOCUMENT_COUNT": "1"
+      };
 
-      // สร้าง QR
-      new QRCode(qrcodeDiv, {
-        text: qrLink,
-        width: 200,
-        height: 200,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer Mjc6R29DY1JvRlA5RGc5QUhlNWh6aU15MUxvRHFwM1RJNXpTVTVrVUVTRTpleUowWVhocFpDSTZJalU1TXpJek1qZ3lNREkyTlRFaUxDSndZWE56ZDI5eVpDSTZJblJsYzNReU1rQlFZWE56TURFaWZRZ0VxaWxNeHJSbW1DcnIwMFZZbzBoMzZYR2lBaEZyZGc='
+      };
 
-      console.log("QR Link:", qrLink);
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'OK') {
+          const qrUrl = `https://uat-e-box.one.th/develop/?sid=e3a702147bf62f8ec098af95da7563df&id=${trxUUID}`;
+          document.getElementById('qr-url').innerHTML = `URL: <a href="${qrUrl}" target="_blank">${qrUrl}</a>`;
+          QRCode.toCanvas(document.getElementById('qrcode'), qrUrl);
+        } else {
+          alert('เกิดข้อผิดพลาดในการสร้าง QR Code');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('ไม่สามารถเรียก API ได้');
+      }
     }
   </script>
-
 </body>
 </html>
