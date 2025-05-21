@@ -1,47 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ตรวจสอบเลขบัตรประชาชน</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        input { padding: 8px; font-size: 16px; width: 250px; }
-        button { padding: 8px 16px; font-size: 16px; margin-left: 10px; }
-        #result { margin-top: 20px; font-weight: bold; }
-    </style>
+  <title>ช่องกรอกเลขบัตรประชาชน 3 วิธี</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    label { display: block; margin-top: 20px; font-weight: bold; }
+    input { padding: 8px; font-size: 16px; width: 250px; }
+  </style>
 </head>
 <body>
-    <h1>ตรวจสอบเลขบัตรประชาชน 13 หลัก</h1>
-    <input type="text" id="idcard" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" maxlength="13">
-    <button onclick="checkID()">ตรวจสอบ</button>
-    <div id="result"></div>
+  <h1>ช่องกรอกเลขบัตรประชาชน 13 หลัก (3 วิธี)</h1>
+  
+  <!-- วิธีที่ 1: type="number" -->
+  <label for="id1">1. ใช้ &lt;input type="number"&gt; (ข้อควรระวัง: บางเบราว์เซอร์มีปุ่มลูกศรและอนุญาตพิมพ์ตัวอื่นได้)</label>
+  <input type="number" id="id1" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก">
 
-    <script>
-        function checkID() {
-            const id = document.getElementById('idcard').value.trim();
-            const resultDiv = document.getElementById('result');
+  <!-- วิธีที่ 2: type="text" + oninput replace กรองไม่ใช่ตัวเลข -->
+  <label for="id2">2. ใช้ &lt;input type="text"&gt; + oninput กรองเฉพาะตัวเลข</label>
+  <input type="text" id="id2" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" 
+         oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
-            if (id.length !== 13 || !/^\d{13}$/.test(id)) {
-                resultDiv.textContent = "กรุณากรอกเลขบัตรประชาชนให้ถูกต้อง 13 หลัก";
-                resultDiv.style.color = "red";
-                return;
-            }
-
-            let sum = 0;
-            for (let i = 0; i < 12; i++) {
-                sum += parseInt(id.charAt(i)) * (13 - i);
-            }
-            const correctCheckDigit = (11 - (sum % 11)) % 10;
-            const inputCheckDigit = parseInt(id.charAt(12));
-
-            if (correctCheckDigit === inputCheckDigit) {
-                resultDiv.innerHTML = `เลขบัตรประชาชน <strong>${id}</strong> ถูกต้อง ✔️`;
-                resultDiv.style.color = "green";
-            } else {
-                const correctedID = id.substring(0, 12) + correctCheckDigit;
-                resultDiv.innerHTML = `เลขบัตรประชาชนไม่ถูกต้อง ❌<br>เลขบัตรที่ถูกต้องคือ: <strong>${correctedID}</strong>`;
-                resultDiv.style.color = "red";
-            }
-        }
-    </script>
+  <!-- วิธีที่ 3: type="text" + JavaScript keypress กรองป้องกันตอนพิมพ์ -->
+  <label for="id3">3. ใช้ &lt;input type="text"&gt; + JavaScript กรอง keypress</label>
+  <input type="text" id="id3" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก">
+  
+  <script>
+    // วิธีที่ 3: กรองไม่ให้พิมพ์ตัวอักษรหรือสัญลักษณ์ที่ไม่ใช่เลข
+    document.getElementById('id3').addEventListener('keypress', function(e) {
+      // ถ้าไม่ใช่เลข 0-9 หยุด event ไม่ให้พิมพ์
+      if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>
