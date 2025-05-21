@@ -2,14 +2,18 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>ตรวจสอบบัตรประชาชน และสร้าง QR Code</title>
+  <title>Pitipol Utility Web</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     input, button { padding: 8px; font-size: 16px; margin-top: 5px; }
     input { width: 250px; }
     button { margin-left: 5px; }
-    #result, #qr-section { margin-top: 20px; font-weight: bold; }
+    #result, #qr-section, #companyInfo { margin-top: 20px; padding: 15px; border-radius: 10px; }
+    #result { font-weight: bold; }
+    #companyInfo { background-color: #f5f5f5; border: 1px solid #ccc; }
     canvas { margin-top: 10px; }
+    .label { font-weight: bold; color: #444; }
+    .value { margin-left: 10px; color: #000; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
@@ -18,10 +22,11 @@
   <input type="text" id="idcard" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก">
   <button onclick="checkID()">ตรวจสอบ</button>
   <div id="result"></div>
+  <div id="companyInfo"></div>
 
   <hr>
 
-  <h1>2. สร้าง QR Code จาก API</h1>
+  <h1>2. สร้าง QR Code ทดสอบ OB1</h1>
   <button onclick="generateQRCode()">สร้าง QR Code</button>
   <div id="qr-section">
     <div id="qr-url"></div>
@@ -34,13 +39,16 @@
       if (!/[0-9]/.test(e.key)) e.preventDefault();
     });
 
-    function checkID() {
+    async function checkID() {
       const id = document.getElementById('idcard').value.trim();
       const resultDiv = document.getElementById('result');
+      const companyDiv = document.getElementById('companyInfo');
+      companyDiv.innerHTML = '';
+      resultDiv.style.color = 'black';
 
       if (id.length !== 13) {
-        resultDiv.textContent = "กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก";
-        resultDiv.style.color = "red";
+        resultDiv.textContent = 'กรุณากรอกเลขบัตรให้ครบ 13 หลัก';
+        resultDiv.style.color = 'red';
         return;
       }
 
@@ -53,12 +61,58 @@
 
       if (correctCheckDigit === inputCheckDigit) {
         resultDiv.innerHTML = `เลขบัตรประชาชน <strong>${id}</strong> ถูกต้อง ✔️`;
-        resultDiv.style.color = "green";
+        resultDiv.style.color = 'green';
+        await fetchCompanyInfo(id);
       } else {
         const correctedID = id.substring(0, 12) + correctCheckDigit;
         resultDiv.innerHTML = `เลขบัตรไม่ถูกต้อง ❌<br>เลขที่ถูกต้องคือ: <strong>${correctedID}</strong>`;
-        resultDiv.style.color = "red";
+        resultDiv.style.color = 'red';
       }
+    }
+
+    async function fetchCompanyInfo(taxId) {
+      const companyDiv = document.getElementById('companyInfo');
+      companyDiv.innerHTML = 'กำลังค้นหาข้อมูลบริษัท...';
+
+      try {
+        const response = await fetch(`https://openapi.dbd.go.th/api/v1/juristic_person/TAXID/${taxId}`, {
+          headers: {
+            'Authorization': 'Bearer ใส่-token-จริงตรงนี้'
+          }
+        });
+
+        const json = await response.json();
+
+        if (json.status.code !== '1000') {
+          companyDiv.innerHTML = `ไม่พบข้อมูลบริษัทสำหรับเลขประจำตัวผู้เสียภาษี: ${taxId}`;
+          return;
+        }
+
+        const org = json.data[0]["cd:OrganizationJuristicPerson"];
+        const addr = org["cd:OrganizationJuristicAddress"]["cr:AddressType"];
+
+        companyDiv.innerHTML = `
+          <h3>ข้อมูลบริษัท</h3>
+          <p><span class="label">ชื่อไทย:</span><span class="value">${org["cd:OrganizationJuristicNameTH"]}</span></p>
+          <p><span class="label">ชื่ออังกฤษ:</span><span class="value">${org["cd:OrganizationJuristicNameEN"]}</span></p>
+          <p><span class="label">ประเภทนิติบุคคล:</span><span class="value">${org["cd:OrganizationJuristicType"]}</span></p>
+          <p><span class="label">วันที่จดทะเบียน:</span><span class="value">${formatDate(org["cd:OrganizationJuristicRegisterDate"])}</span></p>
+          <p><span class="label">สถานะ:</span><span class="value">${org["cd:OrganizationJuristicStatus"]}</span></p>
+          <p><span class="label">วัตถุประสงค์:</span><span class="value">${org["cd:OrganizationJuristicObjective"]["td:JuristicObjectiveTextTH"]}</span></p>
+          <p><span class="label">ทุนจดทะเบียน:</span><span class="value">${parseInt(org["cd:OrganizationJuristicRegisterCapital"]).toLocaleString()} บาท</span></p>
+          <p><span class="label">ที่อยู่:</span><span class="value">${addr["cd:Address"]} แขวง${addr["cd:CitySubDivision"]["cr:CityTextTH"]} เขต${addr["cd:City"]["cr:CityTextTH"]} จังหวัด${addr["cd:CountrySubDivision"]["cr:CountrySubDivisionTextTH"]}</span></p>
+        `;
+      } catch (error) {
+        companyDiv.innerHTML = 'เกิดข้อผิดพลาดในการเรียกข้อมูลบริษัท';
+        console.error(error);
+      }
+    }
+
+    function formatDate(dateStr) {
+      const year = dateStr.substring(0, 4);
+      const month = dateStr.substring(4, 6);
+      const day = dateStr.substring(6, 8);
+      return `${day}/${month}/${parseInt(year) + 543}`;
     }
 
     // เรียก API เพื่อสร้างลิงก์ แล้ว generate QR Code
