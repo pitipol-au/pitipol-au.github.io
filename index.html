@@ -1,16 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My First GitHub Page</title>
+    <title>ตรวจสอบเลขบัตรประชาชน</title>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
-        h1 { color: #2c3e50; }
-        p { font-size: 18px; }
+        input { padding: 8px; font-size: 16px; width: 250px; }
+        button { padding: 8px 16px; font-size: 16px; margin-left: 10px; }
+        #result { margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>สวัสดีจาก GitHub Pages!</h1>
-    <p>นี่คือเว็บแรกของฉันบน GitHub Pages</p>
-    <p>ลองแก้ไขข้อความนี้ได้เลย :)</p>
+    <h1>ตรวจสอบเลขบัตรประชาชน 13 หลัก</h1>
+    <input type="text" id="idcard" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" maxlength="13">
+    <button onclick="checkID()">ตรวจสอบ</button>
+    <div id="result"></div>
+
+    <script>
+        function checkID() {
+            const id = document.getElementById('idcard').value.trim();
+            const resultDiv = document.getElementById('result');
+
+            if (id.length !== 13 || !/^\d{13}$/.test(id)) {
+                resultDiv.textContent = "กรุณากรอกเลขบัตรประชาชนให้ถูกต้อง 13 หลัก";
+                resultDiv.style.color = "red";
+                return;
+            }
+
+            let sum = 0;
+            for (let i = 0; i < 12; i++) {
+                sum += parseInt(id.charAt(i)) * (13 - i);
+            }
+            const checkDigit = (11 - (sum % 11)) % 10;
+
+            if (checkDigit === parseInt(id.charAt(12))) {
+                resultDiv.textContent = "เลขบัตรประชาชนถูกต้อง ✔️";
+                resultDiv.style.color = "green";
+            } else {
+                resultDiv.textContent = "เลขบัตรประชาชนไม่ถูกต้อง ❌";
+                resultDiv.style.color = "red";
+            }
+        }
+    </script>
 </body>
 </html>
