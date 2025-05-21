@@ -1,29 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-  <title>ตรวจสอบเลขบัตรประชาชน 13 หลัก (วิธีที่ 3)</title>
+  <meta charset="UTF-8">
+  <title>ตรวจสอบบัตรประชาชน + สร้าง QR Code</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    input { padding: 8px; font-size: 16px; width: 250px; }
-    button { padding: 8px 16px; font-size: 16px; margin-left: 10px; }
+    input, button { padding: 8px; font-size: 16px; margin: 5px 0; width: 300px; }
+    button { width: auto; margin-left: 10px; }
     #result { margin-top: 20px; font-weight: bold; }
+    #qrcode { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>ตรวจสอบเลขบัตรประชาชน 13 หลัก</h1>
+
+  <h2>ตรวจสอบเลขบัตรประชาชน 13 หลัก</h2>
   <input type="text" id="idcard" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก">
   <button onclick="checkID()">ตรวจสอบ</button>
   <div id="result"></div>
 
+  <hr>
+
+  <h2>สร้าง QR Code (Mock แบบง่าย)</h2>
+  <button onclick="generateQRCode()">สร้าง QR Code</button>
+  <div id="qrcode"></div>
+
+  <!-- QRCode.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <script>
-    // ดัก keypress ให้กรอกได้เฉพาะเลข 0-9 เท่านั้น (วิธีที่ 3)
+    // ตรวจสอบเลขบัตรประชาชน
     document.getElementById('idcard').addEventListener('keypress', function(e) {
-      if (!/[0-9]/.test(e.key)) {
-        e.preventDefault();
-      }
+      if (!/[0-9]/.test(e.key)) e.preventDefault();
     });
 
-    // ฟังก์ชันตรวจสอบเลขบัตรประชาชน 13 หลัก
     function checkID() {
       const id = document.getElementById('idcard').value.trim();
       const resultDiv = document.getElementById('result');
@@ -38,18 +47,39 @@
       for (let i = 0; i < 12; i++) {
         sum += parseInt(id.charAt(i)) * (13 - i);
       }
-      const correctCheckDigit = (11 - (sum % 11)) % 10;
-      const inputCheckDigit = parseInt(id.charAt(12));
+      const checkDigit = (11 - (sum % 11)) % 10;
 
-      if (correctCheckDigit === inputCheckDigit) {
+      if (checkDigit === parseInt(id.charAt(12))) {
         resultDiv.innerHTML = `เลขบัตรประชาชน <strong>${id}</strong> ถูกต้อง ✔️`;
         resultDiv.style.color = "green";
       } else {
-        const correctedID = id.substring(0, 12) + correctCheckDigit;
-        resultDiv.innerHTML = `เลขบัตรประชาชนไม่ถูกต้อง ❌<br>เลขบัตรที่ถูกต้องคือ: <strong>${correctedID}</strong>`;
+        const correctID = id.substring(0, 12) + checkDigit;
+        resultDiv.innerHTML = `เลขบัตรไม่ถูกต้อง ❌<br>เลขที่ถูกต้องคือ: <strong>${correctID}</strong>`;
         resultDiv.style.color = "red";
       }
     }
+
+    // สร้าง QR Code จาก mock URL หรือ API จริง (ถ้าใช้ backend)
+    function generateQRCode() {
+      const qrcodeDiv = document.getElementById('qrcode');
+      qrcodeDiv.innerHTML = ''; // Clear previous QR
+
+      // ✅ ตัวอย่าง mock URL (แทนที่ด้วยลิงก์จริงจาก backend ได้)
+      const qrLink = "https://uat-e-box.one.th/develop/?sid=dummy&id=" + crypto.randomUUID();
+
+      // สร้าง QR
+      new QRCode(qrcodeDiv, {
+        text: qrLink,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      console.log("QR Link:", qrLink);
+    }
   </script>
+
 </body>
 </html>
