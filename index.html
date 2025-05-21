@@ -30,13 +30,15 @@
             for (let i = 0; i < 12; i++) {
                 sum += parseInt(id.charAt(i)) * (13 - i);
             }
-            const checkDigit = (11 - (sum % 11)) % 10;
+            const correctCheckDigit = (11 - (sum % 11)) % 10;
+            const inputCheckDigit = parseInt(id.charAt(12));
 
-            if (checkDigit === parseInt(id.charAt(12))) {
-                resultDiv.textContent = "เลขบัตรประชาชนถูกต้อง ✔️";
+            if (correctCheckDigit === inputCheckDigit) {
+                resultDiv.innerHTML = `เลขบัตรประชาชน <strong>${id}</strong> ถูกต้อง ✔️`;
                 resultDiv.style.color = "green";
             } else {
-                resultDiv.textContent = "เลขบัตรประชาชนไม่ถูกต้อง ❌";
+                const correctedID = id.substring(0, 12) + correctCheckDigit;
+                resultDiv.innerHTML = `เลขบัตรประชาชนไม่ถูกต้อง ❌<br>เลขบัตรที่ถูกต้องคือ: <strong>${correctedID}</strong>`;
                 resultDiv.style.color = "red";
             }
         }
