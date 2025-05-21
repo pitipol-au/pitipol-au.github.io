@@ -75,11 +75,7 @@
       companyDiv.innerHTML = 'กำลังค้นหาข้อมูลบริษัท...';
 
       try {
-        const response = await fetch(`https://openapi.dbd.go.th/api/v1/juristic_person/${taxId}`, {
-          headers: {
-            'Authorization': 'Bearer ใส่-token-จริงตรงนี้'
-          }
-        });
+        const response = await fetch(`https://openapi.dbd.go.th/api/v1/juristic_person/${taxId}`);
 
         const json = await response.json();
 
