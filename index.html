@@ -94,7 +94,7 @@
           <p><span class="label">ประเภทนิติบุคคล:</span><span class="value">${org["cd:OrganizationJuristicType"]}</span></p>
           <p><span class="label">วันที่จดทะเบียน:</span><span class="value">${formatDate(org["cd:OrganizationJuristicRegisterDate"])}</span></p>
           <p><span class="label">สถานะ:</span><span class="value">${org["cd:OrganizationJuristicStatus"]}</span></p>
-          <p><span class="label">วัตถุประสงค์:</span><span class="value">${org["cd:OrganizationJuristicObjective"]["td:JuristicObjectiveTextTH"]}</span></p>
+          <p><span class="label">วัตถุประสงค์:</span><span class="value">${org["cd:OrganizationJuristicObjective"]["td:JuristicObjective"]["td:JuristicObjectiveTextTH"]}</span></p>
           <p><span class="label">ทุนจดทะเบียน:</span><span class="value">${parseInt(org["cd:OrganizationJuristicRegisterCapital"]).toLocaleString()} บาท</span></p>
           <p><span class="label">ที่อยู่:</span><span class="value">${addr["cd:Address"]} แขวง${addr["cd:CitySubDivision"]["cr:CityTextTH"]} เขต${addr["cd:City"]["cr:CityTextTH"]} จังหวัด${addr["cd:CountrySubDivision"]["cr:CountrySubDivisionTextTH"]}</span></p>
         `;
