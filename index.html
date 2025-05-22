@@ -96,7 +96,7 @@
           <p><span class="label">สถานะ:</span><span class="value">${org["cd:OrganizationJuristicStatus"]}</span></p>
           <p><span class="label">วัตถุประสงค์:</span><span class="value">${org["cd:OrganizationJuristicObjective"]["td:JuristicObjective"]["td:JuristicObjectiveTextTH"]}</span></p>
           <p><span class="label">ทุนจดทะเบียน:</span><span class="value">${parseInt(org["cd:OrganizationJuristicRegisterCapital"]).toLocaleString()} บาท</span></p>
-          <p><span class="label">ที่อยู่:</span><span class="value">${addr["cd:Address"]} แขวง${addr["cd:CitySubDivision"]["cr:CityTextTH"]} เขต${addr["cd:City"]["cr:CityTextTH"]} จังหวัด${addr["cd:CountrySubDivision"]["cr:CountrySubDivisionTextTH"]}</span></p>
+          <p><span class="label">ที่อยู่:</span><span class="value">${addr["cd:Address"]} แขวง${addr["cd:CitySubDivision"]["cr:CitySubDivisionTextTH"]} ${addr["cd:City"]["cr:CityTextTH"]} จังหวัด${addr["cd:CountrySubDivision"]["cr:CountrySubDivisionTextTH"]}</span></p>
         `;
       } catch (error) {
         companyDiv.innerHTML = 'เกิดข้อผิดพลาดในการเรียกข้อมูลบริษัท';
@@ -195,4 +195,13 @@
     }
   </script>
 </body>
+  <footer style="text-align: center; padding: 1rem 0; font-size: 0.75rem; color: #888;">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+    <span>Website by</span>
+    <a href="https://etax.one.th" target="_blank" rel="noopener">
+      <img src="https://etax.one.th/_nuxt/img/oeb-logo.748cf59.webp" alt="Your Company Logo"
+           style="height: 60px; opacity: 0.6; transition: opacity 0.3s;" />
+    </a>
+  </div>
+</footer>
 </html>
