@@ -33,6 +33,15 @@
     <canvas id="qrcode"></canvas>
   </div>
 
+  <hr>
+
+  <h1>3. โปรแกรมแปลงการลืมเปลี่ยนภาษาจากอังกฤษเป็นไทย</h1>
+  <textarea id="inputText" rows="5" cols="50" placeholder="พิมพ์ข้อความภาษาอังกฤษที่ต้องการแปลง..."></textarea><br/>
+  <button onclick="convertText()">แปลง</button>
+
+  <h2>ผลลัพธ์:</h2>
+  <p id="outputText" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; width: 500px;"></p>
+
   <script>
     // ตรวจสอบเลขบัตรประชาชน
     document.getElementById('idcard').addEventListener('keypress', function(e) {
@@ -192,6 +201,30 @@
         console.error(error);
         alert('ไม่สามารถเรียก API ได้');
       }
+    }
+
+    const engToThai = {
+      'a': 'ฟ', 'b': 'ิ', 'c': 'ำ', 'd': 'พ', 'e': 'แ', 'f': 'ร', 'g': 'น', 'h': 'ย', 'i': 'ว', 'j': 'ม',
+      'k': 'ใ', 'l': 'ด', 'm': 'ท', 'n': 'ส', 'o': 'ก', 'p': 'ข', 'q': 'ๆ', 'r': 'ไ', 's': 'ต', 't': 'ื',
+      'u': 'ี', 'v': 'ใ', 'w': 'ไ', 'x': 'ฝ', 'y': 'ย', 'z': 'ผ',
+      'A': 'ฟ', 'B': 'ิ', 'C': 'ำ', 'D': 'พ', 'E': 'แ', 'F': 'ร', 'G': 'น', 'H': 'ย', 'I': 'ว', 'J': 'ม',
+      'K': 'ใ', 'L': 'ด', 'M': 'ท', 'N': 'ส', 'O': 'ก', 'P': 'ข', 'Q': 'ๆ', 'R': 'ไ', 'S': 'ต', 'T': 'ื',
+      'U': 'ี', 'V': 'ใ', 'W': 'ไ', 'X': 'ฝ', 'Y': 'ย', 'Z': 'ผ',
+      '`': 'ๅ', '1': '/', '2': '-', '3': 'ภ', '4': 'ถ', '5': 'ุ', '6': 'ึ', '7': 'ค', '8': 'ต', '9': 'จ', '0': 'ข', '-': 'ช', '=': 'ฮ',
+      '~': '+', '!': '๑', '@': '๒', '#': '๓', '$': '๔', '%': 'ู', '^': '฿', '&': '๕', '*': '๖', '(': '๗', ')': '๘', '_': '๙', '+': '๐',
+      '[': 'ช', ']': 'บ', '\\': 'ฃ', ';': 'ล', "'": 'ฅ', ',': 'ม', '.': 'ใ', '/': 'ฝ',
+      '{': 'ฌ', '}': 'ฟ', '|': '๏', ':': 'ฬ', '"': 'ฦ', '<': 'ฒ', '>': 'ณ', '?': 'ฅ', ' ': ' '
+    };
+
+    function convertText() {
+      const input = document.getElementById('inputText').value;
+      let output = '';
+
+      for (let ch of input) {
+        output += engToThai[ch] || ch;
+      }
+
+      document.getElementById('outputText').textContent = output;
     }
   </script>
 </body>
