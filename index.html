@@ -278,17 +278,17 @@
       document.getElementById('outputText').textContent = output;
     }
 
-    // --- ส่วนที่ 4 เกมเหรียญแปลก ---
+    // --- ส่วนที่ 4 เกมชาวเกาะแปลก ---
     let coins = [];
-    let oddIndex = -1;
+    let oddIndex = 0;
     let oddType = '';
     let weighCount = 0;
     const maxWeighs = 3;
     let weighHistory = [];
 
     function createCoins() {
-      coins = Array(13).fill(1.0); // index 0 จะไม่ใช้
-      oddIndex = Math.floor(Math.random() * 12) + 1; // 1 ถึง 12
+      coins = Array(12).fill(1.0); // index 0 จะไม่ใช้
+      oddIndex = Math.floor(Math.random() * 12);
       oddType = Math.random() < 0.5 ? 'light' : 'heavy';
       coins[oddIndex] = oddType === 'light' ? 0.9 : 1.1;
       weighCount = 0;
@@ -381,7 +381,7 @@ function submitGuess() {
     return;
   }
 
-  const correct = (guessIndex === oddIndex) &&
+  const correct = (guessIndex === oddIndex + 1) &&
     ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
 
   const resultElem = document.getElementById('guess-result');
