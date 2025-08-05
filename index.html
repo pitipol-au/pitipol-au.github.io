@@ -372,31 +372,31 @@
       }
     }
 
-    function submitGuess() {
-      const guessIndex = parseInt(document.getElementById('guess-index').value);
-      const guessType = document.getElementById('guess-type').value;
+function submitGuess() {
+  const guessIndex = parseInt(document.getElementById('guess-index').value);
+  const guessType = document.getElementById('guess-type').value;
 
-      if (isNaN(guessIndex) || guessIndex < 1 || guessIndex > 12) {
-        alert('กรุณากรอกหมายเลขชาวเกาะระหว่าง 1 ถึง 12');
-        return;
-      }
+  if (isNaN(guessIndex) || guessIndex < 1 || guessIndex > 12) {
+    alert('กรุณากรอกหมายเลขชาวเกาะระหว่าง 1 ถึง 12');
+    return;
+  }
 
-      const correct = ((guessIndex - 1) === oddIndex - 1) &&
-        ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
+  const correct = (guessIndex === oddIndex) &&
+    ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
 
-      const resultElem = document.getElementById('guess-result');
+  const resultElem = document.getElementById('guess-result');
 
-      if (correct) {
-        resultElem.style.color = 'green';
-        resultElem.textContent = '✅ ถูกต้อง! คุณเจอชาวเกาะแปลกแล้ว';
-      } else {
-        resultElem.style.color = 'red';
-        resultElem.textContent = `❌ ผิด ชาวเกาะที่แปลกคือหมายเลข ${oddIndex} และเขา ${oddType === 'heavy' ? 'หนักกว่า' : 'เบากว่า'} คนอื่น`;
-      }
+  if (correct) {
+    resultElem.style.color = 'green';
+    resultElem.textContent = '✅ ถูกต้อง! คุณเจอชาวเกาะแปลกแล้ว';
+  } else {
+    resultElem.style.color = 'red';
+    resultElem.textContent = `❌ ผิด ชาวเกาะที่แปลกคือหมายเลข ${oddIndex} และเขา ${oddType === 'heavy' ? 'หนักกว่า' : 'เบากว่า'} คนอื่น`;
+  }
 
-      document.getElementById('guess-index').disabled = true;
-      document.getElementById('guess-type').disabled = true;
-      document.querySelector('#guess-section button').disabled = true;
-    }
+  document.getElementById('guess-index').disabled = true;
+  document.getElementById('guess-type').disabled = true;
+  document.querySelector('#guess-section button').disabled = true;
+}
 
 </script>
