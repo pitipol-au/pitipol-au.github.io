@@ -280,15 +280,15 @@
 
     // --- ส่วนที่ 4 เกมชาวเกาะแปลก ---
     let coins = [];
-    let oddIndex = 0;
+    let oddIndex = -1;
     let oddType = '';
     let weighCount = 0;
     const maxWeighs = 3;
     let weighHistory = [];
 
     function createCoins() {
-      coins = Array(12).fill(1.0); // index 0 จะไม่ใช้
-      oddIndex = Math.floor(Math.random() * 12);
+      coins = Array(13).fill(1.0); // index 0 จะไม่ใช้
+      oddIndex = Math.floor(Math.random() * 12) + 1; // 1 ถึง 12
       oddType = Math.random() < 0.5 ? 'light' : 'heavy';
       coins[oddIndex] = oddType === 'light' ? 0.9 : 1.1;
       weighCount = 0;
@@ -372,31 +372,33 @@
       }
     }
 
-function submitGuess() {
-  const guessIndex = parseInt(document.getElementById('guess-index').value);
-  const guessType = document.getElementById('guess-type').value;
+    function submitGuess() {
+      const guessIndex = parseInt(document.getElementById('guess-index').value);
+      const guessType = document.getElementById('guess-type').value;
 
-  if (isNaN(guessIndex) || guessIndex < 1 || guessIndex > 12) {
-    alert('กรุณากรอกหมายเลขชาวเกาะระหว่าง 1 ถึง 12');
-    return;
-  }
+      if (isNaN(guessIndex) || guessIndex < 1 || guessIndex > 12) {
+        alert('กรุณากรอกหมายเลขชาวเกาะระหว่าง 1 ถึง 12');
+        return;
+      }
 
-  const correct = (guessIndex === oddIndex + 1) &&
-    ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
+      const correct = ((guessIndex - 1) === oddIndex - 1) &&
+        ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
 
-  const resultElem = document.getElementById('guess-result');
+      const resultElem = document.getElementById('guess-result');
 
-  if (correct) {
-    resultElem.style.color = 'green';
-    resultElem.textContent = '✅ ถูกต้อง! คุณเจอชาวเกาะแปลกแล้ว';
-  } else {
-    resultElem.style.color = 'red';
-    resultElem.textContent = `❌ ผิด ชาวเกาะที่แปลกคือหมายเลข ${oddIndex} และเขา ${oddType === 'heavy' ? 'หนักกว่า' : 'เบากว่า'} คนอื่น`;
-  }
+      if (correct) {
+        resultElem.style.color = 'green';
+        resultElem.textContent = '✅ ถูกต้อง! คุณเจอชาวเกาะแปลกแล้ว';
+      } else {
+        resultElem.style.color = 'red';
+        resultElem.textContent = `❌ ผิด ชาวเกาะที่แปลกคือหมายเลข ${oddIndex} และเขา ${oddType === 'heavy' ? 'หนักกว่า' : 'เบากว่า'} คนอื่น`;
+      }
 
-  document.getElementById('guess-index').disabled = true;
-  document.getElementById('guess-type').disabled = true;
-  document.querySelector('#guess-section button').disabled = true;
-}
+      document.getElementById('guess-index').disabled = true;
+      document.getElementById('guess-type').disabled = true;
+      document.querySelector('#guess-section button').disabled = true;
+    }
 
+    // เริ่มเกมทันทีเมื่อโหลด
+    createCoins();
 </script>
