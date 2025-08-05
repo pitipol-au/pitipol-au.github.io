@@ -477,7 +477,7 @@
         });
         let displayText = weighHistory.map(w => {
           return `ชั่งครั้งที่ ${w.weighNumber}: ฝั่งซ้าย [${w.left.map(i => i + 1).join(', ')}] กับ ฝั่งขวา [${w.right.map(i => i + 1).join(', ')}] ผลลัพธ์: ${w.result}`;
-        }).join(' < br > ');
+        }).join('<br>');
           document.getElementById('weigh-result').innerHTML = displayText;
           if (weighCount >= maxWeighs) {
             document.getElementById('weighing-section').style.display = 'none';
