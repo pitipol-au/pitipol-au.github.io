@@ -299,49 +299,66 @@
     else return 'equal';
   }
 
-  function doWeigh() {
-    if (weighCount >= maxWeighs) return; // ป้องกันเกิน 3 ครั้ง
+// เก็บประวัติการชั่งแต่ละครั้ง
+let weighHistory = [];
 
-    const leftInput = document.getElementById('left-coins').value.trim();
-    const rightInput = document.getElementById('right-coins').value.trim();
+function doWeigh() {
+  if (weighCount >= maxWeighs) return; // ป้องกันเกิน 3 ครั้ง
 
-    const parseIndices = (str) => {
-      if (!str) return [];
-      return str.split(',').map(s => parseInt(s.trim())).filter(i => !isNaN(i) && i >= 0 && i < 12);
-    };
+  const leftInput = document.getElementById('left-coins').value.trim();
+  const rightInput = document.getElementById('right-coins').value.trim();
 
-    const leftIndices = parseIndices(leftInput);
-    const rightIndices = parseIndices(rightInput);
+  const parseIndices = (str) => {
+    if (!str) return [];
+    return str.split(',').map(s => parseInt(s.trim())).filter(i => !isNaN(i) && i >= 0 && i < 12);
+  };
 
-    // ตรวจสอบซ้ำเหรียญหรือ index ผิด
-    const allIndices = leftIndices.concat(rightIndices);
-    const uniqueIndices = new Set(allIndices);
-    if (uniqueIndices.size !== allIndices.length) {
-      alert('มีเลขเหรียญซ้ำกันระหว่างสองฝั่ง หรือป้อนข้อมูลไม่ถูกต้อง');
-      return;
-    }
+  const leftIndices = parseIndices(leftInput);
+  const rightIndices = parseIndices(rightInput);
 
-    if (leftIndices.length === 0 && rightIndices.length === 0) {
-      alert('กรุณากรอกเหรียญด้านซ้ายหรือขวาอย่างน้อยฝั่งละหนึ่งเหรียญ');
-      return;
-    }
-
-    const result = weigh(coins, leftIndices, rightIndices);
-
-    weighCount++;
-    document.getElementById('weigh-result').textContent = `ผลการชั่งครั้งที่ ${weighCount}: ${result}`;
-
-    if (weighCount >= maxWeighs) {
-      // ปิดชั่งน้ำหนัก เปิดให้ทายเหรียญแปลก
-      document.getElementById('weighing-section').style.display = 'none';
-      document.getElementById('guess-section').style.display = 'block';
-    } else {
-      document.getElementById('weighing-number').textContent = weighCount + 1;
-      // เคลียร์ช่องกรอกเพื่อชั่งครั้งถัดไป
-      document.getElementById('left-coins').value = '';
-      document.getElementById('right-coins').value = '';
-    }
+  // ตรวจสอบซ้ำเหรียญหรือ index ผิด
+  const allIndices = leftIndices.concat(rightIndices);
+  const uniqueIndices = new Set(allIndices);
+  if (uniqueIndices.size !== allIndices.length) {
+    alert('มีเลขเหรียญซ้ำกันระหว่างสองฝั่ง หรือป้อนข้อมูลไม่ถูกต้อง');
+    return;
   }
+
+  if (leftIndices.length === 0 && rightIndices.length === 0) {
+    alert('กรุณากรอกเหรียญด้านซ้ายหรือขวาอย่างน้อยฝั่งละหนึ่งเหรียญ');
+    return;
+  }
+
+  const result = weigh(coins, leftIndices, rightIndices);
+
+  weighCount++;
+
+  // เก็บข้อมูลประวัติการชั่ง
+  weighHistory.push({
+    weighNumber: weighCount,
+    left: leftIndices,
+    right: rightIndices,
+    result: result
+  });
+
+  // สร้างข้อความแสดงผลทั้งหมด
+  let displayText = weighHistory.map(w => {
+    return `ชั่งครั้งที่ ${w.weighNumber}: ฝั่งซ้าย [${w.left.join(', ')}] กับ ฝั่งขวา [${w.right.join(', ')}] ผลลัพธ์: ${w.result}`;
+  }).join('\n');
+
+  document.getElementById('weigh-result').textContent = displayText;
+
+  if (weighCount >= maxWeighs) {
+    // ปิดชั่งน้ำหนัก เปิดให้ทายเหรียญแปลก
+    document.getElementById('weighing-section').style.display = 'none';
+    document.getElementById('guess-section').style.display = 'block';
+  } else {
+    document.getElementById('weighing-number').textContent = weighCount + 1;
+    // เคลียร์ช่องกรอกเพื่อชั่งครั้งถัดไป
+    document.getElementById('left-coins').value = '';
+    document.getElementById('right-coins').value = '';
+  }
+}
 
   function submitGuess() {
     const guessIndex = parseInt(document.getElementById('guess-index').value);
