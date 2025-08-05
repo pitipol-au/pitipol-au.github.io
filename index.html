@@ -14,10 +14,14 @@
     canvas { margin-top: 10px; }
     .label { font-weight: bold; color: #444; }
     .value { margin-left: 10px; color: #000; }
-    hr { margin: 40px 0; 
+    hr { margin: 40px 0; }
     #weigh-result {
-      white-space: pre-wrap; /* ให้ขึ้นบรรทัดใหม่ตาม \n */
+      white-space: pre-wrap;
       margin-top: 10px;
+      background: #f7f7f7;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
@@ -49,11 +53,14 @@
 
   <hr />
 
-  <h1>4. เกมเหรียญแปลก (12 เหรียญ หาน้ำหนักเหรียญแปลก)</h1>
+  <h1>4. เกมชาวเกาะแปลก</h1>
   <h1>เกมชาวเกาะแปลก (12 คน หาคนที่แปลก)</h1>
   <p>คุณมีโอกาสชั่งน้ำหนัก 3 ครั้ง เพื่อหาว่าชาวเกาะคนใดแปลก (หมายเลข 1–12) และเขา <strong>หนักหรือเบากว่าคนอื่น</strong></p>
 
   <div id="coinGame">
+
+    <div id="weigh-result"></div> <!-- ย้ายมานอก section เพื่อให้แสดงตลอด -->
+
     <div id="weighing-section">
       <h3>ชั่งครั้งที่ <span id="weighing-number">1</span></h3>
 
@@ -63,8 +70,7 @@
       <label>ชาวเกาะฝั่งขวา (คั่นด้วย , ): </label>
       <input type="text" id="right-coins" placeholder="เช่น 4,5,6" size="20" />
       <br />
-      <button onclick="doWeigh()">ชั่งน้ำหนัก</button>
-      <p id="weigh-result"></p>
+      <button type="button" onclick="doWeigh()">ชั่งน้ำหนัก</button>
     </div>
 
     <div id="guess-section" style="display:none;">
@@ -78,11 +84,12 @@
         <option value="l">เบา</option>
       </select>
       <br />
-      <button onclick="submitGuess()">ส่งคำตอบ</button>
+      <button type="button" onclick="submitGuess()">ส่งคำตอบ</button>
       <p id="guess-result"></p>
     </div>
 
-    <button onclick="createCoins()">เริ่มเกมใหม่</button>
+    <br />
+    <button type="button" onclick="createCoins()">เริ่มเกมใหม่</button>
   </div>
 
   <script>
@@ -288,7 +295,7 @@
       weighHistory = [];
 
       document.getElementById('weighing-number').textContent = '1';
-      document.getElementById('weigh-result').textContent = '';
+      document.getElementById('weigh-result').innerHTML = '';
       document.getElementById('guess-result').textContent = '';
       document.getElementById('left-coins').value = '';
       document.getElementById('right-coins').value = '';
