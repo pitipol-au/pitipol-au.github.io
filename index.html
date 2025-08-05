@@ -446,9 +446,9 @@
       function weigh(coins, leftIndices, rightIndices) {
         const leftWeight = leftIndices.reduce((sum, i) => sum + coins[i + 1], 0);
         const rightWeight = rightIndices.reduce((sum, i) => sum + coins[i + 1], 0);
-        if (leftWeight > rightWeight) return 'left';
-        else if (leftWeight < rightWeight) return 'right';
-        else return 'equal';
+        if (leftWeight > rightWeight) return 'ซ้ายหนักกว่า';
+        else if (leftWeight < rightWeight) return 'ขวาหนักกว่า';
+        else return 'หนักเท่ากัน';
       }
 
       function doWeigh() {
