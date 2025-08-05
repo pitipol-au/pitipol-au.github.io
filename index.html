@@ -5,7 +5,7 @@
   <title>Pitipol Utility Web</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    input, button { padding: 8px; font-size: 16px; margin-top: 5px; }
+    input, button, textarea { padding: 8px; font-size: 16px; margin-top: 5px; }
     input { width: 250px; }
     button { margin-left: 5px; }
     #result, #qr-section, #companyInfo { margin-top: 20px; padding: 15px; border-radius: 10px; }
@@ -39,11 +39,13 @@
   <textarea id="inputText" rows="5" cols="50" placeholder="พิมพ์ข้อความภาษาอังกฤษที่ต้องการแปลง..."></textarea><br/>
   <button onclick="convertText()">แปลง</button>
 
-  <h2>ผลลัพธ์:</h2>
-  <p id="outputText" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; width: 500px;"></p>
+  <hr>
+
+  <h1>4. เกมเหรียญแปลก (12 เหรียญ หาน้ำหนักเหรียญแปลก)</h1>
+  <button onclick="manualPlay()">เล่นเกมเหรียญแปลก</button>
 
   <script>
-    // ตรวจสอบเลขบัตรประชาชน
+    // (1) ตรวจสอบเลขบัตรประชาชน
     document.getElementById('idcard').addEventListener('keypress', function(e) {
       if (!/[0-9]/.test(e.key)) e.preventDefault();
     });
@@ -120,7 +122,7 @@
       return `${day}/${month}/${parseInt(year) + 543}`;
     }
 
-    // เรียก API เพื่อสร้างลิงก์ แล้ว generate QR Code
+    // (2) สร้าง QR Code
     async function generateQRCode() {
       const apiUrl = 'https://uatservice-etax.one.th/fulltax/qr-code/registerdocument';
       const trxUUID = self.crypto.randomUUID();
@@ -203,6 +205,7 @@
       }
     }
 
+    // (3) โปรแกรมแปลงภาษาอังกฤษเป็นไทย
     const engToThai = {
       'a': 'ฟ', 'b': 'ิ', 'c': 'แ', 'd': 'ก', 'e': 'ำ', 'f': 'ด', 'g': 'เ', 'h': '้', 'i': 'ร', 'j': '่',
       'k': 'า', 'l': 'ส', 'm': 'ท', 'n': 'ื', 'o': 'น', 'p': 'ย', 'q': 'ๆ', 'r': 'พ', 's': 'ห', 't': 'ะ',
@@ -225,6 +228,52 @@
       }
 
       document.getElementById('outputText').textContent = output;
+    }
+
+    // (4) เกมเหรียญแปลก (12 เหรียญ)
+    function createCoins() {
+      const coins = Array(12).fill(1.0);
+      const oddIndex = Math.floor(Math.random() * 12);
+      const oddType = Math.random() < 0.5 ? 'light' : 'heavy';
+      coins[oddIndex] = oddType === 'light' ? 0.9 : 1.1;
+      return { coins, oddIndex, oddType };
+    }
+
+    function weigh(coins, leftIndices, rightIndices) {
+      const leftWeight = leftIndices.reduce((sum, i) => sum + coins[i], 0);
+      const rightWeight = rightIndices.reduce((sum, i) => sum + coins[i], 0);
+      if (leftWeight > rightWeight) return 'left';
+      if (leftWeight < rightWeight) return 'right';
+      return 'equal';
+    }
+
+    async function manualPlay() {
+      const { coins, oddIndex, oddType } = createCoins();
+      alert("คุณมีโอกาสชั่งน้ำหนัก 3 ครั้ง เพื่อหาว่าเหรียญไหนแปลก (index 0–11) และหนักหรือเบากว่าปกติ\nตัวอย่างการกรอก: 0,1,2");
+
+      for (let i = 1; i <= 3; i++) {
+        let leftInput = prompt(`ชั่งครั้งที่ ${i} - กรอกเลขเหรียญด้านซ้าย (คั่นด้วย , ) :`);
+        let rightInput = prompt(`ชั่งครั้งที่ ${i} - กรอกเลขเหรียญด้านขวา (คั่นด้วย , ) :`);
+
+        const leftIndices = leftInput ? leftInput.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x)) : [];
+        const rightIndices = rightInput ? rightInput.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x)) : [];
+
+        const result = weigh(coins, leftIndices, rightIndices);
+        alert(`ผลชั่ง: ${result}`);
+      }
+
+      let guessIndex = parseInt(prompt("ทาย - เลข index ของเหรียญแปลก (0–11):"));
+      let guessType = prompt("หนักหรือเบา? (h = หนัก / l = เบา):").toLowerCase();
+
+      const correct = (guessIndex === oddIndex) &&
+                      ((guessType === 'h' && oddType === 'heavy') ||
+                       (guessType === 'l' && oddType === 'light'));
+
+      if (correct) {
+        alert("✅ ถูกต้อง! คุณเจอเหรียญแปลกแล้ว");
+      } else {
+        alert(`❌ ผิด! เหรียญแปลกคือเลข ${oddIndex} และมันเป็น ${oddType}`);
+      }
     }
   </script>
 </body>
