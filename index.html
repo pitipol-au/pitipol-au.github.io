@@ -303,108 +303,78 @@
     else return 'equal';
   }
 
-// ตัวแปรเก็บผลการชั่ง
-let weighHistory = [];
-
-// ฟังก์ชันชั่งน้ำหนัก (doWeigh) (เหมือนเดิม)
-function doWeigh() {
-  if (weighCount >= maxWeighs) return;
-
-  const leftInput = document.getElementById('left-coins').value.trim();
-  const rightInput = document.getElementById('right-coins').value.trim();
-
-  const parseIndices = (str) => {
-    if (!str) return [];
-    return str.split(',').map(s => parseInt(s.trim())).filter(i => !isNaN(i) && i >= 0 && i < 12);
-  };
-
-  const leftIndices = parseIndices(leftInput);
-  const rightIndices = parseIndices(rightInput);
-
-  const allIndices = leftIndices.concat(rightIndices);
-  const uniqueIndices = new Set(allIndices);
-  if (uniqueIndices.size !== allIndices.length) {
-    alert('มีเลขเหรียญซ้ำกันระหว่างสองฝั่ง หรือป้อนข้อมูลไม่ถูกต้อง');
-    return;
-  }
-
-  if (leftIndices.length === 0 && rightIndices.length === 0) {
-    alert('กรุณากรอกเหรียญด้านซ้ายหรือขวาอย่างน้อยฝั่งละหนึ่งเหรียญ');
-    return;
-  }
-
-  const result = weigh(coins, leftIndices, rightIndices);
-
-  weighCount++;
-
-  weighHistory.push({
-    weighNumber: weighCount,
-    left: leftIndices,
-    right: rightIndices,
-    result: result
-  });
-
-  // แสดงผลการชั่งทั้งหมด ไม่เคลียร์เมื่อทายเหรียญ
-  let displayText = weighHistory.map(w => {
-    return `ชั่งครั้งที่ ${w.weighNumber}: ฝั่งซ้าย [${w.left.join(', ')}] กับ ฝั่งขวา [${w.right.join(', ')}] ผลลัพธ์: ${w.result}`;
-  }).join('<br>');
+  // ตัวแปรเก็บผลการชั่ง
+  let weighHistory = [];
   
-  document.getElementById('weigh-result').innerHTML = displayText;
-
-  if (weighCount >= maxWeighs) {
-    document.getElementById('weighing-section').style.display = 'none';
-    document.getElementById('guess-section').style.display = 'block';
-  } else {
-    document.getElementById('weighing-number').textContent = weighCount + 1;
-    document.getElementById('left-coins').value = '';
-    document.getElementById('right-coins').value = '';
+  // ฟังก์ชันชั่งน้ำหนัก (doWeigh) (เหมือนเดิม)
+  function doWeigh() {
+    if (weighCount >= maxWeighs) return;
+  
+    const leftInput = document.getElementById('left-coins').value.trim();
+    const rightInput = document.getElementById('right-coins').value.trim();
+  
+    const parseIndices = (str) => {
+      if (!str) return [];
+      return str.split(',').map(s => parseInt(s.trim())).filter(i => !isNaN(i) && i >= 0 && i < 12);
+    };
+  
+    const leftIndices = parseIndices(leftInput);
+    const rightIndices = parseIndices(rightInput);
+  
+    const allIndices = leftIndices.concat(rightIndices);
+    const uniqueIndices = new Set(allIndices);
+    if (uniqueIndices.size !== allIndices.length) {
+      alert('มีเลขเหรียญซ้ำกันระหว่างสองฝั่ง หรือป้อนข้อมูลไม่ถูกต้อง');
+      return;
+    }
+  
+    if (leftIndices.length === 0 && rightIndices.length === 0) {
+      alert('กรุณากรอกเหรียญด้านซ้ายหรือขวาอย่างน้อยฝั่งละหนึ่งเหรียญ');
+      return;
+    }
+  
+    const result = weigh(coins, leftIndices, rightIndices);
+  
+    weighCount++;
+  
+    weighHistory.push({
+      weighNumber: weighCount,
+      left: leftIndices,
+      right: rightIndices,
+      result: result
+    });
+  
+    // แสดงผลการชั่งทั้งหมด ไม่เคลียร์เมื่อทายเหรียญ
+    let displayText = weighHistory.map(w => {
+      return `ชั่งครั้งที่ ${w.weighNumber}: ฝั่งซ้าย [${w.left.join(', ')}] กับ ฝั่งขวา [${w.right.join(', ')}] ผลลัพธ์: ${w.result}`;
+    }).join('<br>');
+    
+    document.getElementById('weigh-result').innerHTML = displayText;
+  
+    if (weighCount >= maxWeighs) {
+      document.getElementById('weighing-section').style.display = 'none';
+      document.getElementById('guess-section').style.display = 'block';
+    } else {
+      document.getElementById('weighing-number').textContent = weighCount + 1;
+      document.getElementById('left-coins').value = '';
+      document.getElementById('right-coins').value = '';
+    }
   }
-}
-
-// ฟังก์ชันทายเหรียญ (submitGuess)
-function submitGuess() {
-  const guessIndex = parseInt(document.getElementById('guess-index').value);
-  const guessType = document.getElementById('guess-type').value;
-
-  if (isNaN(guessIndex) || guessIndex < 0 || guessIndex > 11) {
-    alert('กรุณากรอกเลข index ระหว่าง 0 ถึง 11');
-    return;
-  }
-
-  const correct = (guessIndex === oddIndex) &&
-    ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
-
-  const resultElem = document.getElementById('guess-result');
-
-  if (correct) {
-    resultElem.style.color = 'green';
-    resultElem.textContent = '✅ ถูกต้อง! คุณเจอเหรียญแปลกแล้ว';
-  } else {
-    resultElem.style.color = 'red';
-    resultElem.textContent = `❌ ผิด เหรียญแปลกอยู่ที่ index ${oddIndex} และมันเป็นเหรียญที่ ${oddType === 'heavy' ? 'หนักกว่า' : 'เบากว่า'}`;
-  }
-
-  // ไม่ล้างหรือเปลี่ยน weigh-result เพื่อให้ผลการชั่งยังโชว์อยู่
-
-  document.getElementById('guess-index').disabled = true;
-  document.getElementById('guess-type').disabled = true;
-  document.querySelector('#guess-section button').disabled = true;
-}
 
   function submitGuess() {
     const guessIndex = parseInt(document.getElementById('guess-index').value);
     const guessType = document.getElementById('guess-type').value;
-
+  
     if (isNaN(guessIndex) || guessIndex < 0 || guessIndex > 11) {
       alert('กรุณากรอกเลข index ระหว่าง 0 ถึง 11');
       return;
     }
-
+  
     const correct = (guessIndex === oddIndex) &&
       ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
-
+  
     const resultElem = document.getElementById('guess-result');
-
+  
     if (correct) {
       resultElem.style.color = 'green';
       resultElem.textContent = '✅ ถูกต้อง! คุณเจอเหรียญแปลกแล้ว';
@@ -412,13 +382,16 @@ function submitGuess() {
       resultElem.style.color = 'red';
       resultElem.textContent = `❌ ผิด เหรียญแปลกอยู่ที่ index ${oddIndex} และมันเป็นเหรียญที่ ${oddType === 'heavy' ? 'หนักกว่า' : 'เบากว่า'}`;
     }
-
-    // ปิดการกรอกเพิ่มเติม
+  
+    // ✅ อย่าทำแบบนี้:
+    // document.getElementById('weigh-result').textContent = ''; ❌
+  
+    // ✅ อย่าทำแบบนี้:
+    // document.getElementById('weigh-result').innerHTML = ''; ❌
+  
+    // ล็อกอินพวก input ไม่ให้เปลี่ยนอีก
     document.getElementById('guess-index').disabled = true;
     document.getElementById('guess-type').disabled = true;
     document.querySelector('#guess-section button').disabled = true;
   }
-
-  // เริ่มเกมตอนโหลดเพจ
-  createCoins();
 </script>
