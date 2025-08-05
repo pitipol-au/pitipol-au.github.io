@@ -1,30 +1,31 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Pitipol Utility Web</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    input, button, textarea { padding: 8px; font-size: 16px; margin-top: 5px; }
-    input { width: 250px; }
-    button { margin-left: 5px; }
+    input, button, textarea, select { padding: 8px; font-size: 16px; margin-top: 5px; }
+    input, textarea, select { width: 250px; }
+    button { margin-left: 5px; cursor: pointer; }
     #result, #qr-section, #companyInfo { margin-top: 20px; padding: 15px; border-radius: 10px; }
     #result { font-weight: bold; }
     #companyInfo { background-color: #f5f5f5; border: 1px solid #ccc; }
     canvas { margin-top: 10px; }
     .label { font-weight: bold; color: #444; }
     .value { margin-left: 10px; color: #000; }
+    hr { margin: 40px 0; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
   <h1>1. ตรวจสอบเลขบัตรประชาชน 13 หลัก</h1>
-  <input type="text" id="idcard" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก">
+  <input type="text" id="idcard" maxlength="13" placeholder="กรอกเลขบัตรประชาชน 13 หลัก" />
   <button onclick="checkID()">ตรวจสอบ</button>
   <div id="result"></div>
   <div id="companyInfo"></div>
 
-  <hr>
+  <hr />
 
   <h1>2. สร้าง QR Code ทดสอบ OB1</h1>
   <button onclick="generateQRCode()">สร้าง QR Code</button>
@@ -33,19 +34,52 @@
     <canvas id="qrcode"></canvas>
   </div>
 
-  <hr>
+  <hr />
 
   <h1>3. โปรแกรมแปลงการลืมเปลี่ยนภาษาจากอังกฤษเป็นไทย</h1>
-  <textarea id="inputText" rows="5" cols="50" placeholder="พิมพ์ข้อความภาษาอังกฤษที่ต้องการแปลง..."></textarea><br/>
+  <textarea id="inputText" rows="5" cols="50" placeholder="พิมพ์ข้อความภาษาอังกฤษที่ต้องการแปลง..."></textarea><br />
   <button onclick="convertText()">แปลง</button>
 
-  <hr>
+  <h2>ผลลัพธ์:</h2>
+  <p id="outputText" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; width: 500px;"></p>
+
+  <hr />
 
   <h1>4. เกมเหรียญแปลก (12 เหรียญ หาน้ำหนักเหรียญแปลก)</h1>
-  <button onclick="manualPlay()">เล่นเกมเหรียญแปลก</button>
+  <div id="coinGame">
+    <p>คุณมีโอกาสชั่งน้ำหนัก 3 ครั้ง เพื่อหาว่าเหรียญไหนแปลก (index 0–11) และหนักหรือเบากว่าปกติ</p>
+
+    <div id="weighing-section">
+      <h3>ชั่งครั้งที่ <span id="weighing-number">1</span></h3>
+
+      <label>เหรียญด้านซ้าย (คั่นด้วย , ): </label>
+      <input type="text" id="left-coins" placeholder="เช่น 0,1,2" size="20" />
+      <br />
+      <label>เหรียญด้านขวา (คั่นด้วย , ): </label>
+      <input type="text" id="right-coins" placeholder="เช่น 3,4,5" size="20" />
+      <br />
+      <button onclick="doWeigh()">ชั่งน้ำหนัก</button>
+      <p id="weigh-result"></p>
+    </div>
+
+    <div id="guess-section" style="display:none;">
+      <h3>ทายเหรียญแปลก</h3>
+      <label>เลข index ของเหรียญแปลก (0–11): </label>
+      <input type="number" id="guess-index" min="0" max="11" />
+      <br />
+      <label>หนักหรือเบา? </label>
+      <select id="guess-type">
+        <option value="h">หนัก</option>
+        <option value="l">เบา</option>
+      </select>
+      <br />
+      <button onclick="submitGuess()">ส่งคำตอบ</button>
+      <p id="guess-result"></p>
+    </div>
+  </div>
 
   <script>
-    // (1) ตรวจสอบเลขบัตรประชาชน
+    // --- ส่วนที่ 1 ตรวจสอบเลขบัตรประชาชน ---
     document.getElementById('idcard').addEventListener('keypress', function(e) {
       if (!/[0-9]/.test(e.key)) e.preventDefault();
     });
@@ -122,7 +156,7 @@
       return `${day}/${month}/${parseInt(year) + 543}`;
     }
 
-    // (2) สร้าง QR Code
+    // --- ส่วนที่ 2 สร้าง QR Code ---
     async function generateQRCode() {
       const apiUrl = 'https://uatservice-etax.one.th/fulltax/qr-code/registerdocument';
       const trxUUID = self.crypto.randomUUID();
@@ -152,7 +186,7 @@
             "L33-LINE_NET_TOTAL_AMOUNT": "2130.00",
             "L34-LINE_NET_TOTAL_CURRENCY_CODE": "THB",
             "L35-LINE_NET_INCLUDE_TAX_TOTAL_AMOUNT": "2140.00",
-            "L36-LINE_NET_INCLUDE_TAX_TOTAL_CURRENCY_CODE": "THB",
+            "L36-LINE_NET_INCLUDE_TAX_TOTAL_CURRENCY_CODE": "THB"
           }
         ],
         "F01-LINE_TOTAL_COUNT": "1",
@@ -205,7 +239,7 @@
       }
     }
 
-    // (3) โปรแกรมแปลงภาษาอังกฤษเป็นไทย
+    // --- ส่วนที่ 3 แปลงการลืมเปลี่ยนภาษาอังกฤษเป็นไทย ---
     const engToThai = {
       'a': 'ฟ', 'b': 'ิ', 'c': 'แ', 'd': 'ก', 'e': 'ำ', 'f': 'ด', 'g': 'เ', 'h': '้', 'i': 'ร', 'j': '่',
       'k': 'า', 'l': 'ส', 'm': 'ท', 'n': 'ื', 'o': 'น', 'p': 'ย', 'q': 'ๆ', 'r': 'พ', 's': 'ห', 't': 'ะ',
@@ -230,60 +264,32 @@
       document.getElementById('outputText').textContent = output;
     }
 
-    // (4) เกมเหรียญแปลก (12 เหรียญ)
+    // --- ส่วนที่ 4 เกมเหรียญแปลก ---
+    let coins = [];
+    let oddIndex = -1;
+    let oddType = '';
+    let weighCount = 0;
+    const maxWeighs = 3;
+
     function createCoins() {
-      const coins = Array(12).fill(1.0);
-      const oddIndex = Math.floor(Math.random() * 12);
-      const oddType = Math.random() < 0.5 ? 'light' : 'heavy';
+      coins = Array(12).fill(1.0);
+      oddIndex = Math.floor(Math.random() * 12);
+      oddType = Math.random() < 0.5 ? 'light' : 'heavy';
       coins[oddIndex] = oddType === 'light' ? 0.9 : 1.1;
-      return { coins, oddIndex, oddType };
+      weighCount = 0;
+      document.getElementById('weighing-number').textContent = '1';
+      document.getElementById('weigh-result').textContent = '';
+      document.getElementById('guess-result').textContent = '';
+      document.getElementById('left-coins').value = '';
+      document.getElementById('right-coins').value = '';
+      document.getElementById('guess-index').value = '';
+      document.getElementById('guess-type').value = 'h';
+      document.getElementById('guess-index').disabled = false;
+      document.getElementById('guess-type').disabled = false;
+      document.querySelector('#guess-section button').disabled = false;
+      document.getElementById('weighing-section').style.display = 'block';
+      document.getElementById('guess-section').style.display = 'none';
     }
 
     function weigh(coins, leftIndices, rightIndices) {
-      const leftWeight = leftIndices.reduce((sum, i) => sum + coins[i], 0);
-      const rightWeight = rightIndices.reduce((sum, i) => sum + coins[i], 0);
-      if (leftWeight > rightWeight) return 'left';
-      if (leftWeight < rightWeight) return 'right';
-      return 'equal';
-    }
-
-    async function manualPlay() {
-      const { coins, oddIndex, oddType } = createCoins();
-      alert("คุณมีโอกาสชั่งน้ำหนัก 3 ครั้ง เพื่อหาว่าเหรียญไหนแปลก (index 0–11) และหนักหรือเบากว่าปกติ\nตัวอย่างการกรอก: 0,1,2");
-
-      for (let i = 1; i <= 3; i++) {
-        let leftInput = prompt(`ชั่งครั้งที่ ${i} - กรอกเลขเหรียญด้านซ้าย (คั่นด้วย , ) :`);
-        let rightInput = prompt(`ชั่งครั้งที่ ${i} - กรอกเลขเหรียญด้านขวา (คั่นด้วย , ) :`);
-
-        const leftIndices = leftInput ? leftInput.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x)) : [];
-        const rightIndices = rightInput ? rightInput.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x)) : [];
-
-        const result = weigh(coins, leftIndices, rightIndices);
-        alert(`ผลชั่ง: ${result}`);
-      }
-
-      let guessIndex = parseInt(prompt("ทาย - เลข index ของเหรียญแปลก (0–11):"));
-      let guessType = prompt("หนักหรือเบา? (h = หนัก / l = เบา):").toLowerCase();
-
-      const correct = (guessIndex === oddIndex) &&
-                      ((guessType === 'h' && oddType === 'heavy') ||
-                       (guessType === 'l' && oddType === 'light'));
-
-      if (correct) {
-        alert("✅ ถูกต้อง! คุณเจอเหรียญแปลกแล้ว");
-      } else {
-        alert(`❌ ผิด! เหรียญแปลกคือเลข ${oddIndex} และมันเป็น ${oddType}`);
-      }
-    }
-  </script>
-</body>
-  <footer style="text-align: center; padding: 1rem 0; font-size: 0.75rem; color: #888;">
-  <div style="display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
-    <span>Website by</span>
-    <a href="https://etax.one.th" target="_blank" rel="noopener">
-      <img src="https://etax.one.th/_nuxt/img/oeb-logo.748cf59.webp" alt="Your Company Logo"
-           style="height: 60px; opacity: 0.6; transition: opacity 0.3s;" />
-    </a>
-  </div>
-</footer>
-</html>
+      const left
