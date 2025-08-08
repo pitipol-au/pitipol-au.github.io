@@ -97,8 +97,8 @@
     <p id="outputText" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; width: 500px;"></p>
     <hr />
     <h1>4. เกมชาวเกาะแปลก</h1>
-    <h2>ชาวเกาะ 12 คน หาคนที่แปลก</h2>
-    <p>คุณมีโอกาสชั่งน้ำหนัก 3 ครั้ง เพื่อหาว่าชาวเกาะคนใดแปลก (หมายเลข 1–12) และเขา <strong>หนักหรือเบากว่าคนอื่น</strong>
+    <h2>ชาวเกาะ 15 คน หาคนที่แปลก</h2>
+    <p>คุณมีโอกาสชั่งน้ำหนัก 3 ครั้ง เพื่อหาว่าชาวเกาะคนใดแปลก (หมายเลข 1–15) และเขา <strong>หนักหรือเบากว่าคนอื่น</strong>
     </p>
     <div id="coinGame">
       <div id="weigh-result"></div>
@@ -116,8 +116,8 @@
       </div>
       <div id="guess-section" style="display:none;">
         <h3>ทายชาวเกาะแปลก</h3>
-        <label>หมายเลขของชาวเกาะแปลก (1–12): </label>
-        <input type="number" id="guess-index" min="1" max="12" />
+        <label>หมายเลขของชาวเกาะแปลก (1–15): </label>
+        <input type="number" id="guess-index" min="1" max="15" />
         <br />
         <label>หนักหรือเบา? </label>
         <select id="guess-type">
@@ -419,7 +419,7 @@
 
       function createCoins() {
         coins = Array(13).fill(1.0); // index 0 จะไม่ใช้
-        oddIndex = Math.floor(Math.random() * 12) + 1; // 1 ถึง 12
+        oddIndex = Math.floor(Math.random() * 15) + 1; // 1 ถึง 15
         oddType = Math.random() < 0.5 ? 'light' : 'heavy';
         coins[oddIndex] = oddType === 'light' ? 0.9 : 1.1;
         weighCount = 0;
@@ -440,7 +440,7 @@
 
       function parseIndices(str) {
         if (!str) return [];
-        return str.split(',').map(s => parseInt(s.trim())).filter(i => !isNaN(i) && i >= 1 && i <= 12).map(i => i - 1); // -1 เพราะ array เริ่มที่ index 0
+        return str.split(',').map(s => parseInt(s.trim())).filter(i => !isNaN(i) && i >= 1 && i <= 15).map(i => i - 1); // -1 เพราะ array เริ่มที่ index 0
       }
 
       function weigh(coins, leftIndices, rightIndices) {
@@ -492,8 +492,8 @@
         function submitGuess() {
           const guessIndex = parseInt(document.getElementById('guess-index').value);
           const guessType = document.getElementById('guess-type').value;
-          if (isNaN(guessIndex) || guessIndex < 1 || guessIndex > 12) {
-            alert('กรุณากรอกหมายเลขชาวเกาะระหว่าง 1 ถึง 12');
+          if (isNaN(guessIndex) || guessIndex < 1 || guessIndex > 15) {
+            alert('กรุณากรอกหมายเลขชาวเกาะระหว่าง 1 ถึง 15');
             return;
           }
           const correct = ((guessIndex - 1) === oddIndex - 1) && ((guessType === 'h' && oddType === 'heavy') || (guessType === 'l' && oddType === 'light'));
