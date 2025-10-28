@@ -2,7 +2,7 @@
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
-    <title>คำนวณค่าใช้จ่ายตามกลุ่มจังหวัด</title>
+    <title>คำนวณลดหย่อนเที่ยวดีมีคืน 2568</title>
     <style>
       body {
         font-family: "Segoe UI", sans-serif;
@@ -409,103 +409,88 @@
         }
       }
 
-      function calculate() {
-        const rows = document.querySelectorAll("#expenseTable tbody tr");
-        const groupData = {
-          "จังหวัดท่องเที่ยวรอง": {
-            paper: 0,
-            etax: 0
-          },
-          "จังหวัดอื่น": {
-            paper: 0,
-            etax: 0
-          }
-        };
-        rows.forEach(row => {
-          const province = row.querySelector(".province-select")?.value.trim();
-          const district = row.querySelector(".district-select")?.value.trim();
-          const type = row.querySelector(".type-select")?.value.trim();
-          const amount = parseFloat(row.querySelector("input")?.value) || 0;
-          if (!province || !type) return;
-          let group = "จังหวัดอื่น"; // default
-          if (group1Provinces.includes(province)) {
-            group = "จังหวัดท่องเที่ยวรอง";
-          } else if (province === "กระบี่") {
-            if (krabiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "กาญจนบุรี") {
-            if (kanchanaburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "ขอนแก่น") {
-            if (khonkaenGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "ฉะเชิงเทรา") {
-            if (chachoengsaoGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "ชลบุรี") {
-            if (chonburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "เชียงใหม่") {
-            if (chiangMaiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "นครราชสีมา") {
-            if (koratGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "ประจวบคีรีขันธ์") {
-            if (prachuapKhiriKhanGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "พระนครศรีอยุธยา") {
-            if (ayutthayaGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "พังงา") {
-            if (phangNgaGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "เพชรบุรี") {
-            if (phetchaburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "ระยอง") {
-            if (rayongGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "สงขลา") {
-            if (songkhlaGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "สระบุรี") {
-            if (saraburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else if (province === "สุราษฎร์ธานี") {
-            if (suratThaniGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
-            else group = "จังหวัดอื่น"; // อื่น ๆ
-          } else {
-            group = "จังหวัดอื่น";
-          }
-          if (type === "ใบกำกับภาษีกระดาษ") groupData[group].paper += amount;
-          else if (type === "e-Tax Invoice") groupData[group].etax += amount;
-        });
-        // คำนวณตามเพดาน
-        let totalAll = 0;
-        let resultHTML = "<h2>ผลรวมต่อกลุ่มจังหวัด</h2>";
-        for (const [group, data] of Object.entries(groupData)) {
-          const paperCapped = Math.min(data.paper, 10000);
-          const etaxCapped = Math.min(data.etax, 20000);
-          const sum = paperCapped + etaxCapped;
-          totalAll += sum;
-          resultHTML += `
-      
-			<div class="province-summary">
-				<strong>${group}</strong>
-				<br/>
-        ใบกำกับภาษีกระดาษ: ${data.paper.toFixed(2)} (นับได้ ${paperCapped.toFixed(2)})
-				<br/>
-        e-Tax Invoice: ${data.etax.toFixed(2)} (นับได้ ${etaxCapped.toFixed(2)})
-				<br/>
-        รวมกลุ่มนี้: 
-				<strong>${sum.toFixed(2)} บาท</strong>
-			</div>`;
-        }
-        resultHTML += `
-			<h3>💰 รวมทั้งหมด: ${totalAll.toFixed(2)} บาท</h3>`;
-        document.getElementById("result").innerHTML = resultHTML;
-      }
+function calculate() {
+  const rows = document.querySelectorAll("#expenseTable tbody tr");
+
+  // แยกข้อมูลตามประเภทใบกำกับภาษีเป็นกลุ่มใหญ่
+  const typeData = {
+    "ใบกำกับภาษีกระดาษ": {},
+    "e-Tax Invoice": {}
+  };
+
+  rows.forEach(row => {
+    const province = row.querySelector(".province-select")?.value.trim();
+    const district = row.querySelector(".district-select")?.value.trim();
+    const type = row.querySelector(".type-select")?.value.trim();
+    const amount = parseFloat(row.querySelector("input")?.value) || 0;
+
+    if (!province || !type) return;
+
+    // กำหนดกลุ่มจังหวัดย่อย: จังหวัดท่องเที่ยวรอง / จังหวัดอื่น
+    let provinceGroup = "จังหวัดอื่น"; // default
+    if (group1Provinces.includes(province)) {
+      provinceGroup = "จังหวัดท่องเที่ยวรอง";
+    } else if (province === "กระบี่") {
+      provinceGroup = krabiGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "กาญจนบุรี") {
+      provinceGroup = kanchanaburiGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "ขอนแก่น") {
+      provinceGroup = khonkaenGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "ฉะเชิงเทรา") {
+      provinceGroup = chachoengsaoGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "ชลบุรี") {
+      provinceGroup = chonburiGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "เชียงใหม่") {
+      provinceGroup = chiangMaiGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "นครราชสีมา") {
+      provinceGroup = koratGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "ประจวบคีรีขันธ์") {
+      provinceGroup = prachuapKhiriKhanGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "พระนครศรีอยุธยา") {
+      provinceGroup = ayutthayaGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "พังงา") {
+      provinceGroup = phangNgaGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "เพชรบุรี") {
+      provinceGroup = phetchaburiGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "ระยอง") {
+      provinceGroup = rayongGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "สงขลา") {
+      provinceGroup = songkhlaGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "สระบุรี") {
+      provinceGroup = saraburiGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    } else if (province === "สุราษฎร์ธานี") {
+      provinceGroup = suratThaniGroup1.includes(district) ? "จังหวัดท่องเที่ยวรอง" : "จังหวัดอื่น";
+    }
+
+    // สร้าง object ถ้ายังไม่มี
+    if (!typeData[type][provinceGroup]) typeData[type][provinceGroup] = 0;
+
+    typeData[type][provinceGroup] += amount;
+  });
+
+  // สร้าง HTML
+  let totalAll = 0;
+  let resultHTML = "<h2>ผลรวมตามประเภทใบกำกับภาษีและกลุ่มจังหวัด</h2>";
+
+  for (const [type, provinces] of Object.entries(typeData)) {
+    resultHTML += `<h3>${type}</h3>`;
+    let typeSum = 0;
+    for (const [provinceGroup, amount] of Object.entries(provinces)) {
+      // กำหนดเพดาน
+      const capped = type === "ใบกำกับภาษีกระดาษ" ? Math.min(amount, 10000) : Math.min(amount, 20000);
+      typeSum += capped;
+      resultHTML += `
+        <div class="province-summary">
+          <strong>${provinceGroup}</strong>: ${amount.toFixed(2)} บาท
+        </div>`;
+    }
+    resultHTML += `<strong>รวม ${type}: ${typeSum.toFixed(2)} บาท</strong><br/><br/>`;
+    totalAll += typeSum;
+  }
+
+  resultHTML += `<h3>💰 รวมทั้งหมด: ${totalAll.toFixed(2)} บาท</h3>`;
+  document.getElementById("result").innerHTML = resultHTML;
+}
     </script>
   </body>
 </html>
