@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <title>คำนวณค่าใช้จ่ายตามกลุ่มจังหวัด</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        margin: 40px;
+        background: #f8f9fa;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #f0f0f0;
+      }
+
+      select,
+      input[type="number"] {
+        width: 90%;
+        padding: 6px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        margin-top: 15px;
+        padding: 8px 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+
+      .remove-btn {
+        background-color: #dc3545;
+      }
+
+      .remove-btn:hover {
+        background-color: #a71d2a;
+      }
+
+      #result {
+        margin-top: 30px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .province-summary {
+        margin-bottom: 10px;
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>คำนวณค่าใช้จ่ายตามกลุ่มจังหวัด</h1>
+    <table id="expenseTable">
+      <thead>
+        <tr>
+          <th>จังหวัด</th>
+          <th>อำเภอ</th>
+          <th>ประเภทใบกำกับภาษี</th>
+          <th>ค่าใช้จ่าย (บาท)</th>
+          <th>ลบ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <select class="province-select" onchange="updateDistrict(this)">
+              <option value="">-- เลือกจังหวัด --</option>
+              <option>กระบี่</option>
+              <option>กรุงเทพมหานคร</option>
+              <option>กาญจนบุรี</option>
+              <option>กาฬสินธุ์</option>
+              <option>กำแพงเพชร</option>
+              <option>ขอนแก่น</option>
+              <option>จันทบุรี</option>
+              <option>ฉะเชิงเทรา</option>
+              <option>ชลบุรี</option>
+              <option>ชัยนาท</option>
+              <option>ชัยภูมิ</option>
+              <option>ชุมพร</option>
+              <option>เชียงราย</option>
+              <option>เชียงใหม่</option>
+              <option>ตรัง</option>
+              <option>ตราด</option>
+              <option>ตาก</option>
+              <option>นครนายก</option>
+              <option>นครปฐม</option>
+              <option>นครพนม</option>
+              <option>นครราชสีมา</option>
+              <option>นครศรีธรรมราช</option>
+              <option>นครสวรรค์</option>
+              <option>นนทบุรี</option>
+              <option>นราธิวาส</option>
+              <option>น่าน</option>
+              <option>บึงกาฬ</option>
+              <option>บุรีรัมย์</option>
+              <option>ปทุมธานี</option>
+              <option>ประจวบคีรีขันธ์</option>
+              <option>ปราจีนบุรี</option>
+              <option>ปัตตานี</option>
+              <option>พระนครศรีอยุธยา</option>
+              <option>พะเยา</option>
+              <option>พังงา</option>
+              <option>พัทลุง</option>
+              <option>พิจิตร</option>
+              <option>พิษณุโลก</option>
+              <option>เพชรบุรี</option>
+              <option>เพชรบูรณ์</option>
+              <option>แพร่</option>
+              <option>ภูเก็ต</option>
+              <option>มหาสารคาม</option>
+              <option>มุกดาหาร</option>
+              <option>แม่ฮ่องสอน</option>
+              <option>ยโสธร</option>
+              <option>ยะลา</option>
+              <option>ร้อยเอ็ด</option>
+              <option>ระนอง</option>
+              <option>ระยอง</option>
+              <option>ราชบุรี</option>
+              <option>ลพบุรี</option>
+              <option>ลำปาง</option>
+              <option>ลำพูน</option>
+              <option>เลย</option>
+              <option>ศรีสะเกษ</option>
+              <option>สกลนคร</option>
+              <option>สงขลา</option>
+              <option>สตูล</option>
+              <option>สมุทรปราการ</option>
+              <option>สมุทรสงคราม</option>
+              <option>สมุทรสาคร</option>
+              <option>สระแก้ว</option>
+              <option>สระบุรี</option>
+              <option>สิงห์บุรี</option>
+              <option>สุโขทัย</option>
+              <option>สุพรรณบุรี</option>
+              <option>สุราษฎร์ธานี</option>
+              <option>สุรินทร์</option>
+              <option>หนองคาย</option>
+              <option>หนองบัวลำภู</option>
+              <option>อ่างทอง</option>
+              <option>อำนาจเจริญ</option>
+              <option>อุดรธานี</option>
+              <option>อุตรดิตถ์</option>
+              <option>อุทัยธานี</option>
+              <option>อุบลราชธานี</option>
+            </select>
+          </td>
+          <td>
+            <select class="district-select" style="display:none;">
+              <option value="">-- เลือกอำเภอ --</option>
+            </select>
+          </td>
+          <td>
+            <select class="type-select">
+              <option value="">-- เลือกประเภท --</option>
+              <option>ใบกำกับภาษีกระดาษ</option>
+              <option>e-Tax Invoice</option>
+            </select>
+          </td>
+          <td>
+            <input type="number" placeholder="เช่น 500.00" min="0" step="0.01" />
+          </td>
+          <td>
+            <button class="remove-btn" onclick="removeRow(this)">ลบ</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button onclick="addRow()">+ เพิ่มบรรทัด</button>
+    <button onclick="calculate()">🧮 คำนวณผลรวม</button>
+    <div id="result"></div>
+    <script>
+      const group1Provinces = ["เชียงราย", "พิษณุโลก", "ตาก", "เพชรบูรณ์", "นครสวรรค์", "สุโขทัย", "ลำพูน", "อุตรดิตถ์", "ลำปาง", "แม่ฮ่องสอน", "พิจิตร", "แพร่", "น่าน", "กำแพงเพชร", "อุทัยธานี", "พะเยา,อุดรธานี", "อุบลราชธานี", "หนองคาย", "เลย", "มุกดาหาร", "บุรีรัมย์", "ชัยภูมิ", "ศรีสะเกษ", "สุรินทร์", "สกลนคร", "นครพนม", "ร้อยเอ็ด", "มหาสารคาม", "บึงกาฬ", "กาฬสินธุ์", "ยโสธร", "หนองบัวลำภู", "อำนาจเจริญ,ลพบุรี", "สุพรรณบุรี", "นครนายก", "สระแก้ว", "ตราด", "จันทบุรี", "ราชบุรี", "สมุทรสงคราม", "ปราจีนบุรี", "ชัยนาท", "อ่างทอง", "สิงห์บุรี,นครศรีธรรมราช", "พัทลุง", "ตรัง", "สตูล", "ชุมพร", "ระนอง", "นราธิวาส", "ยะลา", "ปัตตานี"];
+      const krabiGroup1 = ["เขาพนม", "ปลายพระยา", "ลำทับ"];
+      const kanchanaburiGroup1 = ["มะขามเตี้ย", "ท่าม่วง", "ท่ามะกา", "บ่อพลอย", "พนมทวน", "เลาขวัญ", "หนองปรือ", "ห้วยกระเจา"];
+      const khonkaenGroup1 = ["กระนวน", "เขาสวนกวาง", "โคกโพธิ์ชัย", "ชนบท", "ชุมแพ", "ซำสูง", "น้ำพอง", "โนนศิลา", "บ้านไผ่", "บ้านฝาง", "บ้านแฮด", "เปือยน้อย", "พระยืน", "พล", "ภูผาม่าน", "ภูเวียง", "มัญจาคีรี", "เวียงเก่า", "แวงน้อย", "แวงใหญ่", "สีชมพู", "หนองนาคำ", "หนองเรือ", "หนองสองห้อง", "อุบลรัตน์"];
+      const chachoengsaoGroup1 = ["คลองเขื่อน ", "ท่าตะเกียบ ", "บางน้ำเปรี้ยว ", "แปลงยาว ", "ราชสาสน์ ", "สนามชัยเขต"];
+      const chonburiGroup1 = ["เกาะจันทร์", "บ่อทอง", "บ้านบึง", "พนัสนิคม", "พานทอง", "หนองใหญ่"];
+      const chiangMaiGroup1 = ["กัลยาณิวัฒนา", "ไชยปราการ", "ดอยเต่า", "ดอยสะเก็ด", "ดอยหล่อ", "พร้าว", "แม่แจ่ม", "แม่แตง", "แม่วาง", "แม่อาย", "เวียงแหง", "สะเมิง", "สันทราย", "สันป่าตอง", "สารภี", "อมก๋อย", "ฮอด"];
+      const koratGroup1 = ["แก้งสนามนาง", "ขามทะเลสอ", "ขามสะแกแสง", "คง", "ครบุรี", "จักราช", "เฉลิมพระเกียรติ", "ชุมพวง", "โชคชัย", "ด่านขุนทด", "เทพารักษ์", "โนนแดง", "โนนไทย", "โนนสูง", "บัวลาย", "บัวใหญ่", "บ้านเหลื่อม", "ประทาย", "ปักธงชัย", "พระทองคำ", "พิมาย", "เมืองยาง", "ลำทะเมนชัย", "วังน้ำเขียว", "สีคิ้ว", "สีดา", "สูงเนิน", "เสิงสาง", "หนองบุญมาก", "ห้วยแถลง"];
+      const prachuapKhiriKhanGroup1 = ["เมืองประจวบคีรีขันธ์", "กุยบุรี", "ทับสะแก", "บางสะพาน", "บางสะพานน้อย"];
+      const ayutthayaGroup1 = ["ท่าเรือ", "นครหลวง", "บางซ้าย", "บางบาล", "บางปะหัน", "บ้านแพรก", "ผักไห่", "ภาชี", "มหาราช", "ลาดบัวหลวง", "วังน้อย", "เสนา", "อุทัย"];
+      const phangNgaGroup1 = ["เมืองพังงา", "เมืองบางปะกง", "คุระบุรี", "ทับปุด", "ท้าย เหมือง", "เกาะยาว", "ตะกั่วทุ่ง"];
+      const phetchaburiGroup1 = ["บ้านลาด", "หนองหญ้าปล้อง"];
+      const rayongGroup1 = ["เขาชะเมา ", "นิคมพัฒนา ", "บ้านค่าย ", "บ้านฉาง ", "ปลวกแดง ", "วังจันทร์"];
+      const songkhlaGroup1 = ["เมืองสงขลา", "กระแสสินธุ์", "คลองหอยโข่ง", "ควนเนียง", "จะนะ", "เทพา", "นาทวี", "นาหม่อม", "บางกล่ำ", "ระโนด", "รัตภูมิ", "สทิงพระ", "สะเดา", "สะบ้าย้อย", "สิงหนคร"];
+      const saraburiGroup1 = ["แก่งคอย ", "เฉลิมพระเกียรติ ", "ดอนพุด ", "บ้านหมอ ", "วังม่วง ", "วิหารแดง ", "หนองแค ", "หนองแซง ", "หนองโดน"];
+      const suratThaniGroup1 = ["เมืองสุราษฎร์ธานี", "กาญจนดิษฐ์", "คีรีรัฐนิคม", "เคียนซา", "ชัยบุรี", "ไชยา", "ดอนสัก", "ท่าฉาง", "ท่าชนะ", "บ้านนาเดิม", "บ้านนาสาร", "พระแสง", "พุนพิน", "วิภาวดี", "เวียงสระ"];
+
+      function updateDistrict(selectElem) {
+        const tr = selectElem.closest("tr");
+        const districtSelect = tr.querySelector(".district-select");
+        const province = selectElem.value;
+        districtSelect.style.display = "inline-block";
+        districtSelect.innerHTML = " < option value = '' > --เลือกอำเภอ-- < /option>";
+        if (province === "กระบี่") {
+          krabiGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          // เพิ่มตัวเลือกอื่น ๆ
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "กาญจนบุรี") {
+          kanchanaburiGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "ขอนแก่น") {
+          khonKaenGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "ฉะเชิงเทรา") {
+          chachoengsaoGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "ชลบุรี") {
+          chonburiGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "นครราชสีมา") {
+          koratGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "ประจวบคีรีขันธ์") {
+          prachuapKhiriKhanGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "พระนครศรีอยุธยา") {
+          ayutthayaGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "พังงา") {
+          phangNgaGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "เพชรบุรี") {
+          phetchaburiGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "ระยอง") {
+          rayongGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "สงขลา") {
+          songkhlaGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "สระบุรี") {
+          saraburiGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "สุราษฎร์ธานี") {
+          suratThaniGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else if (province === "ขอนแก่น") {
+          khonKaenGroup1.forEach(d => {
+            const option = document.createElement("option");
+            option.value = d;
+            option.text = d;
+            districtSelect.appendChild(option);
+          });
+          const otherOption = document.createElement("option");
+          otherOption.value = "อื่น ๆ";
+          otherOption.text = "อื่น ๆ";
+          districtSelect.appendChild(otherOption);
+        } else {
+          districtSelect.style.display = "none"; // จังหวัดอื่นไม่ต้องเลือกอำเภอ
+        }
+      }
+
+      function addRow() {
+        const table = document.getElementById("expenseTable").getElementsByTagName("tbody")[0];
+        const newRow = table.rows[0].cloneNode(true);
+        newRow.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+        newRow.querySelectorAll("input").forEach(i => i.value = "");
+        table.appendChild(newRow);
+      }
+
+      function removeRow(button) {
+        const table = document.getElementById("expenseTable").getElementsByTagName("tbody")[0];
+        if (table.rows.length > 1) {
+          button.closest("tr").remove();
+        } else {
+          alert("ต้องมีอย่างน้อย 1 แถว");
+        }
+      }
+
+      function calculate() {
+        const rows = document.querySelectorAll("#expenseTable tbody tr");
+        const groupData = {
+          "จังหวัดท่องเที่ยวรอง": {
+            paper: 0,
+            etax: 0
+          },
+          "จังหวัดอื่น": {
+            paper: 0,
+            etax: 0
+          }
+        };
+        rows.forEach(row => {
+          const province = row.querySelector(".province-select")?.value.trim();
+          const district = row.querySelector(".district-select")?.value.trim();
+          const type = row.querySelector(".type-select")?.value.trim();
+          const amount = parseFloat(row.querySelector("input")?.value) || 0;
+          if (!province || !type) return;
+          let group = "จังหวัดอื่น"; // default
+          if (group1Provinces.includes(province)) {
+            group = "จังหวัดท่องเที่ยวรอง";
+          } else if (province === "กระบี่") {
+            if (krabiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "กาญจนบุรี") {
+            if (kanchanaburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "ขอนแก่น") {
+            if (khonkaenGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "ฉะเชิงเทรา") {
+            if (chachoengsaoGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "ชลบุรี") {
+            if (chonburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "เชียงใหม่") {
+            if (chiangMaiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "นครราชสีมา") {
+            if (koratGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "ประจวบคีรีขันธ์") {
+            if (prachuapKhiriKhanGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "พระนครศรีอยุธยา") {
+            if (ayutthayaGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "พังงา") {
+            if (phangNgaGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "เพชรบุรี") {
+            if (phetchaburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "ระยอง") {
+            if (rayongGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "สงขลา") {
+            if (songkhlaGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "สระบุรี") {
+            if (saraburiGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else if (province === "สุราษฎร์ธานี") {
+            if (suratThaniGroup1.includes(district)) group = "จังหวัดท่องเที่ยวรอง";
+            else group = "จังหวัดอื่น"; // อื่น ๆ
+          } else {
+            group = "จังหวัดอื่น";
+          }
+          if (type === "ใบกำกับภาษีกระดาษ") groupData[group].paper += amount;
+          else if (type === "e-Tax Invoice") groupData[group].etax += amount;
+        });
+        // คำนวณตามเพดาน
+        let totalAll = 0;
+        let resultHTML = "<h2>ผลรวมต่อกลุ่มจังหวัด</h2>";
+        for (const [group, data] of Object.entries(groupData)) {
+          const paperCapped = Math.min(data.paper, 10000);
+          const etaxCapped = Math.min(data.etax, 20000);
+          const sum = paperCapped + etaxCapped;
+          totalAll += sum;
+          resultHTML += `
+      
+			<div class="province-summary">
+				<strong>${group}</strong>
+				<br/>
+        ใบกำกับภาษีกระดาษ: ${data.paper.toFixed(2)} (นับได้ ${paperCapped.toFixed(2)})
+				<br/>
+        e-Tax Invoice: ${data.etax.toFixed(2)} (นับได้ ${etaxCapped.toFixed(2)})
+				<br/>
+        รวมกลุ่มนี้: 
+				<strong>${sum.toFixed(2)} บาท</strong>
+			</div>`;
+        }
+        resultHTML += `
+			<h3>💰 รวมทั้งหมด: ${totalAll.toFixed(2)} บาท</h3>`;
+        document.getElementById("result").innerHTML = resultHTML;
+      }
+    </script>
+  </body>
+</html>
