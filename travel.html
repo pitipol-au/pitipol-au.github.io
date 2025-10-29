@@ -326,7 +326,7 @@ function calculate() {
     <p>ค่าใช้จ่ายจังหวัดท่องเที่ยวรองที่ลดหย่อนได้ = ${show1.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</p>
     <p>ค่าลดหย่อนจังหวัดท่องเที่ยวรอง = ${show2.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</p>
     <p>ค่าลดหย่อนจังหวัดอื่น = ${show3.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</p>
-    <h3>💰 ลดหย่อนได้มั้งหมด: ${(show2 + show3).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</h3>
+    <h3>💰 ลดหย่อนได้ทั้งหมด: ${(show2 + show3).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} บาท</h3>
   `;
   document.getElementById("result").innerHTML = html;
 }
