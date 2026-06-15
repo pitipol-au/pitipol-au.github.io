@@ -344,20 +344,22 @@
         let calculatedDataRows = [];
 
         function calculateStats() {
-            const rawInput = document.getElementById('dataInput').value;
+        const rawInput = document.getElementById('dataInput').value;
+            
+            // Split by any whitespace, newlines, or tabs
             const rawItems = rawInput.split(/[\s\n\r\t]+/);
             
             globalNumbers = rawItems
-                .map(item => item.replace(/,/g, '').trim())
-                .filter(item => item !== "" && item !== "0")
-                .map(item => parseFloat(item))
-                .filter(num => !isNaN(num));
-
+                .map(item => item.replace(/,/g, '').trim()) // Strip out formatting commas
+                .filter(item => item !== "")                // 1. Skip completely empty elements
+                .map(item => parseFloat(item))              // 2. Convert string to a number
+                .filter(num => !isNaN(num));                // 3. Keep everything that is a real number (including 0!)
+        
             if (globalNumbers.length === 0) {
-                alert("Please paste some valid non-zero numbers!");
+                alert("Please paste some valid numeric data!");
                 return;
             }
-
+            
             const n = globalNumbers.length;
 
             // 1. Mean
