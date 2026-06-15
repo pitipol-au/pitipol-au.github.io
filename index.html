@@ -3,65 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Toolkit Home</title>
+    <title>Course Toolkit Hub</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             max-width: 600px;
-            margin: 80px auto;
+            margin: 40px auto;
             padding: 0 20px;
-            text-align: center;
             color: #333;
+            background-color: #fafafa;
         }
-        h1 { color: #24292e; margin-bottom: 10px; }
-        p { color: #57606a; font-size: 16px; margin-bottom: 30px; }
+        h1 { 
+            text-align: center; 
+            color: #24292e; 
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #57606a;
+            font-size: 15px;
+            margin-bottom: 35px;
+        }
         
-        .menu-list {
+        /* Class Selector Card */
+        .class-card {
+            background: #ffffff;
+            border: 1px solid #d0d7de;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+        .class-card:hover {
+            border-color: #0969da;
+            box-shadow: 0 4px 12px rgba(9, 105, 218, 0.08);
+        }
+        .class-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .class-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #24292e;
+        }
+        .badge {
+            background: #ddf4ff;
+            color: #0969da;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        /* Nested Sessions List */
+        .session-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
+            margin-top: 0;
         }
-        .menu-item {
+        .session-container.active {
+            margin-top: 15px;
+            max-height: 500px; /* Adjust if adding many sessions later */
+            transition: max-height 0.3s ease-in;
+        }
+
+        .session-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #f6f8fa;
             border: 1px solid #d0d7de;
-            padding: 18px 24px;
+            padding: 14px 20px;
             border-radius: 8px;
             text-decoration: none;
             color: #24292e;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
             transition: all 0.2s ease;
         }
-        .menu-item:hover {
+        .session-item:hover {
             background: #eef5ff;
             border-color: #b4d3ff;
-            transform: translateY(-2px);
+            transform: translateX(4px);
         }
-        .menu-item-desc {
+        .session-desc {
             font-weight: normal;
-            font-size: 14px;
+            font-size: 12px;
             color: #57606a;
+            margin-top: 2px;
         }
-        .arrow { color: #0969da; font-size: 18px; }
+        .arrow { color: #0969da; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <h1>Excel Workspace Toolkit</h1>
-    <p>Select a learning branch or utility session below to begin calculations.</p>
+    <h1>Workspace Toolkit</h1>
+    <p class="subtitle">Select your academic course to view associated branches</p>
     
-    <div class="menu-list">
-        <a href="session1/index.html" class="menu-item">
-            <div style="text-align: left;">
-                <div>🚀 Session 1 Branch</div>
-                <div class="menu-item-desc">Data splitter, deviation table, & precision summary statistics formulas</div>
-            </div>
-            <div class="arrow">➔</div>
-        </a>
-        
+    <div class="class-card" onclick="toggleSessions('statsClass')">
+        <div class="class-header">
+            <div class="class-title">Statistical Models and Managerial Analysis</div>
+            <div class="badge">1 Session</div>
         </div>
+        
+        <div id="statsClass" class="session-container">
+            <a href="session1/index.html" class="session-item" onclick="event.stopPropagation();">
+                <div style="text-align: left;">
+                    <div>🚀 Session 01: Probability & Descriptive Statistics</div>
+                    <div class="session-desc">Data range cleaning, deviation tables, and Excel string macros</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+            
+            </div>
+    </div>
+
+    <script>
+        function toggleSessions(id) {
+            const container = document.getElementById(id);
+            container.classList.toggle('active');
+        }
+    </script>
 
 </body>
 </html>
