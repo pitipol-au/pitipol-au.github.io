@@ -72,7 +72,7 @@
         }
         .session-container.active {
             margin-top: 15px;
-            max-height: 500px; /* Adjust if adding many sessions later */
+            max-height: 500px; 
             transition: max-height 0.3s ease-in;
         }
 
@@ -112,8 +112,7 @@
     <div class="class-card" onclick="toggleSessions('statsClass')">
         <div class="class-header">
             <div class="class-title">Statistical Models and Managerial Analysis</div>
-            <div class="badge">1 Session</div>
-        </div>
+            <div class="badge">2 Sessions</div> </div>
         
         <div id="statsClass" class="session-container">
             <a href="session1/index.html" class="session-item" onclick="event.stopPropagation();">
@@ -124,7 +123,14 @@
                 <div class="arrow">➔</div>
             </a>
             
-            </div>
+            <a href="session2/index.html" class="session-item" onclick="event.stopPropagation();">
+                <div style="text-align: left;">
+                    <div>📊 Session 02: Inferential Statistics</div>
+                    <div class="session-desc">Hypothesis testing, confidence intervals, and p-values</div>
+                </div>
+                <div class="arrow">➔</div>
+            </a>
+        </div>
     </div>
 
     <script>
